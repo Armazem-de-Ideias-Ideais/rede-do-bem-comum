@@ -1,0 +1,46 @@
+# Supabase CLI — Rede do Bem Comum.
+# Serve para `supabase start` (local) e documenta os valores que devem ser repetidos no painel do projeto em nuvem.
+# Sem segredos: valores sensíveis vêm de variáveis de ambiente (env(...)) ou dos "Secrets" das Edge Functions.
+
+project_id = "rede-do-bem-comum"
+
+[api]
+enabled = true
+port = 54321
+# ÚNICO schema exposto pelo PostgREST/Data API. NUNCA acrescente "app" ou "pub" (dados privados e projeção interna).
+# No painel: Project Settings → Data API → Exposed schemas = api (retire public e graphql_public).
+schemas = ["api"]
+# Funções do PostGIS/unaccent ficam em "extensions".
+extra_search_path = ["extensions"]
+# Teto de linhas por requisição. O front pagina por chave (ver docs/API_CONTRATO.md §1.2).
+max_rows = 1000
+
+[db]
+port = 54322
+# O código usa só recursos do Postgres 15+ (security_invoker em views). Testado localmente em 16.
+major_version = 15
+
+[db.seed]
+# O seed real é gerado por supabase/seed/build_seed.py e carregado à parte (README_DEPLOY.md §5).
+enabled = false
+
+[auth]
+enabled = true
+# Domínio não fixado no código: SITE_URL vem do ambiente (ex.: https://bemcomum.coolmeia.org).
+site_url = "env(SITE_URL)"
+additional_redirect_urls = ["env(SITE_URL)/", "http://127.0.0.1:8788/", "http://localhost:8788/"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+# Link mágico (OTP por e-mail). Sem senha no lançamento.
+enable_signup = true
+enable_confirmations = false
+double_confirm_changes = true
+otp_length = 6
+otp_expiry = 3600
+
+[functions.notify]
+# A função verifica sozinha o cabeçalho x-webhook-secret (ou a service role key).
+# verify_jwt = false porque as chaves novas do Supabase (sb_secret_...) não são JWT.
+verify_jwt = false

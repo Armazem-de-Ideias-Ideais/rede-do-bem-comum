@@ -1,0 +1,9 @@
+# Dados de trabalho e privados nunca entram no repositório
+data/
+*PRIVADO*
+supabase/seed/out/
+supabase/tests/output/
+web/data/public.json
+.env
+.env.*
+node_modules/

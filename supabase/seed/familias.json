@@ -1,0 +1,266 @@
+[
+ {
+  "id": "autonomous_spaces",
+  "pt": "Espaços autônomos e centros sociais",
+  "en": "Autonomous spaces and social centres",
+  "subs_pt": [
+   "Centro social",
+   "Infoshop",
+   "Café comunitário",
+   "Espaço cultural autogerido"
+  ]
+ },
+ {
+  "id": "books_libraries",
+  "pt": "Livrarias, bibliotecas e arquivos",
+  "en": "Bookshops, libraries and archives",
+  "subs_pt": [
+   "Livraria",
+   "Biblioteca comunitária",
+   "Arquivo",
+   "Livros livres"
+  ]
+ },
+ {
+  "id": "publishing_print",
+  "pt": "Editoras, gráficas e zines",
+  "en": "Publishing, print and zines",
+  "subs_pt": [
+   "Editora",
+   "Gráfica cooperativa",
+   "Zine",
+   "Distribuidora"
+  ]
+ },
+ {
+  "id": "independent_media",
+  "pt": "Mídias livres e comunicação",
+  "en": "Independent media and communication",
+  "subs_pt": [
+   "Rádio comunitária",
+   "Jornal",
+   "Podcast",
+   "Audiovisual independente"
+  ]
+ },
+ {
+  "id": "worker_coops",
+  "pt": "Trabalho autogerido e cooperativas",
+  "en": "Self-managed work and worker co-ops",
+  "subs_pt": [
+   "Cooperativa de trabalho",
+   "Empresa recuperada",
+   "Serviços cooperativos",
+   "Oficina coletiva"
+  ]
+ },
+ {
+  "id": "consumer_coops",
+  "pt": "Consumo cooperativo e abastecimento",
+  "en": "Consumer co-ops and food retail",
+  "subs_pt": [
+   "Mercado cooperativo",
+   "Grupo de compras",
+   "Mercearia autogerida",
+   "Cesta comunitária"
+  ]
+ },
+ {
+  "id": "agroecology",
+  "pt": "Agroecologia e soberania alimentar",
+  "en": "Agroecology and food sovereignty",
+  "subs_pt": [
+   "Horta comunitária",
+   "Agrofloresta",
+   "Banco de sementes",
+   "Agricultura apoiada pela comunidade"
+  ]
+ },
+ {
+  "id": "food_solidarity",
+  "pt": "Cozinhas solidárias e partilha de alimentos",
+  "en": "Community kitchens and food sharing",
+  "subs_pt": [
+   "Cozinha solidária",
+   "Geladeira comunitária",
+   "Resgate de alimentos",
+   "Refeição coletiva"
+  ]
+ },
+ {
+  "id": "housing_communities",
+  "pt": "Moradia, comunidades e ocupações",
+  "en": "Housing, communities and occupations",
+  "subs_pt": [
+   "Cooperativa habitacional",
+   "Comunidade intencional",
+   "Ocupação",
+   "Fundo comunitário de terra"
+  ]
+ },
+ {
+  "id": "repair_reuse",
+  "pt": "Reparo, reúso e oficinas",
+  "en": "Repair, reuse and workshops",
+  "subs_pt": [
+   "Repair café",
+   "Oficina de bicicletas",
+   "Reparo eletrônico",
+   "Oficina de costura"
+  ]
+ },
+ {
+  "id": "libraries_things",
+  "pt": "Tudotecas e bibliotecas de ferramentas",
+  "en": "Libraries of things and tool libraries",
+  "subs_pt": [
+   "Tudoteca",
+   "Biblioteca de ferramentas",
+   "Brinquedoteca comunitária",
+   "Empréstimo de equipamentos"
+  ]
+ },
+ {
+  "id": "gift_exchange",
+  "pt": "Doação, troca e economia da dádiva",
+  "en": "Gifting, exchange and gift economy",
+  "subs_pt": [
+   "Loja grátis",
+   "Feira de trocas",
+   "Freecycle local",
+   "Armário de partilha"
+  ]
+ },
+ {
+  "id": "mutual_aid",
+  "pt": "Apoio mútuo e solidariedade",
+  "en": "Mutual aid and solidarity",
+  "subs_pt": [
+   "Rede de apoio",
+   "Acolhimento comunitário",
+   "Apoio em crises",
+   "Acessibilidade solidária"
+  ]
+ },
+ {
+  "id": "health_care",
+  "pt": "Saúde, cuidado e apoio psicossocial",
+  "en": "Health, care and psychosocial support",
+  "subs_pt": [
+   "Clínica comunitária",
+   "Cuidado coletivo",
+   "Apoio entre pares",
+   "Prática corporal"
+  ]
+ },
+ {
+  "id": "free_education",
+  "pt": "Educação livre e aprendizagem",
+  "en": "Free education and learning",
+  "subs_pt": [
+   "Escola livre",
+   "Universidade popular",
+   "Grupo de estudos",
+   "Biblioteca de saberes"
+  ]
+ },
+ {
+  "id": "arts_culture",
+  "pt": "Arte, cultura e convivialidade",
+  "en": "Arts, culture and conviviality",
+  "subs_pt": [
+   "Ateliê coletivo",
+   "Teatro",
+   "Música",
+   "Cinema comunitário"
+  ]
+ },
+ {
+  "id": "shared_mobility",
+  "pt": "Mobilidade compartilhada e ciclismo",
+  "en": "Shared mobility and cycling",
+  "subs_pt": [
+   "Carona solidária",
+   "Cooperativa de ciclologística",
+   "Bicicleta comunitária",
+   "Oficina móvel"
+  ]
+ },
+ {
+  "id": "commons_infrastructure",
+  "pt": "Água, energia, resíduos e infraestrutura",
+  "en": "Water, energy, waste and infrastructure",
+  "subs_pt": [
+   "Energia comunitária",
+   "Compostagem",
+   "Saneamento comunitário",
+   "Água compartilhada"
+  ]
+ },
+ {
+  "id": "digital_commons",
+  "pt": "Software livre e bens comuns digitais",
+  "en": "Free software and digital commons",
+  "subs_pt": [
+   "Software livre",
+   "Conhecimento aberto",
+   "Hardware livre",
+   "Hospedagem comunitária"
+  ]
+ },
+ {
+  "id": "community_connectivity",
+  "pt": "Internet comunitária e redes federadas",
+  "en": "Community internet and federated networks",
+  "subs_pt": [
+   "Rede mesh",
+   "Provedor comunitário",
+   "Servidor federado",
+   "Infraestrutura de comunicação"
+  ]
+ },
+ {
+  "id": "solidarity_finance",
+  "pt": "Finanças solidárias e moedas sociais",
+  "en": "Solidarity finance and community currencies",
+  "subs_pt": [
+   "Banco de tempo",
+   "Moeda social",
+   "Fundo solidário",
+   "Crédito cooperativo"
+  ]
+ },
+ {
+  "id": "conflict_care",
+  "pt": "Mediação e cuidado de conflitos",
+  "en": "Mediation and conflict care",
+  "subs_pt": [
+   "Mediação comunitária",
+   "Práticas restaurativas",
+   "Facilitação",
+   "Responsabilização coletiva"
+  ]
+ },
+ {
+  "id": "labour_organising",
+  "pt": "Sindicalismo e organização do trabalho",
+  "en": "Labour organising and syndicalism",
+  "subs_pt": [
+   "Sindicato autogerido",
+   "Coletivo de trabalhadores",
+   "Educação sindical",
+   "Apoio laboral"
+  ]
+ },
+ {
+  "id": "ecology_land",
+  "pt": "Ecologia, territórios e bens comuns",
+  "en": "Ecology, land and commons",
+  "subs_pt": [
+   "Comuns territoriais",
+   "Restauração ecológica",
+   "Permacultura",
+   "Defesa comunitária do território"
+  ]
+ }
+]
