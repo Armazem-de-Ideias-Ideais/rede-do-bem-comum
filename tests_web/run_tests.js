@@ -70,8 +70,9 @@ const pick = {
   saopaulo: ITEMS.find(x => x.country === 'BR' && norm(x.city) === 'sao paulo')
 };
 
-const PT_ROUTES = ['inicio', 'explorar', 'i-' + pick.active.slug, 'participar', 'sobre', 'privacidade', 'termos', 'atribuicao', 'carta-de-convivencia', 'por-que-estou-aqui', 'contato', 'indicar', 'retirar-' + pick.active.slug, 'corrigir-' + pick.active.slug, 'reivindicar-' + pick.active.slug, 'conectar-' + pick.active.slug, 'editar-' + pick.active.slug, 'entrar', 'meu-espaco', 'ofertas-e-necessidades', 'painel-editorial', 'convite-' + 'a'.repeat(64), 'retirar', 'i-nao-existe-xyz', 'rota-inexistente'];
-const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'about', 'privacy', 'terms', 'attribution', 'community-charter', 'why-am-i-here', 'contact', 'suggest', 'withdraw-' + pick.active.slug, 'correct-' + pick.active.slug, 'claim-' + pick.active.slug, 'connect-' + pick.active.slug, 'edit-' + pick.active.slug, 'sign-in', 'my-space', 'offers-and-needs', 'editorial-panel', 'invite-' + 'a'.repeat(64), 'withdraw', 'i-does-not-exist-xyz', 'no-such-route'];
+const TOKEN = 'a1b2c3d4'.repeat(8);   // 64 hex: formato do token de confirmação da retirada
+const PT_ROUTES = ['inicio', 'explorar', 'i-' + pick.active.slug, 'participar', 'sobre', 'privacidade', 'termos', 'atribuicao', 'carta-de-convivencia', 'por-que-estou-aqui', 'contato', 'indicar', 'retirar-' + pick.active.slug, 'confirmar-retirada-' + TOKEN, 'corrigir-' + pick.active.slug, 'reivindicar-' + pick.active.slug, 'conectar-' + pick.active.slug, 'editar-' + pick.active.slug, 'entrar', 'meu-espaco', 'ofertas-e-necessidades', 'painel-editorial', 'convite-' + 'a'.repeat(64), 'retirar', 'i-nao-existe-xyz', 'rota-inexistente'];
+const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'about', 'privacy', 'terms', 'attribution', 'community-charter', 'why-am-i-here', 'contact', 'suggest', 'withdraw-' + pick.active.slug, 'confirm-withdrawal-' + TOKEN, 'correct-' + pick.active.slug, 'claim-' + pick.active.slug, 'connect-' + pick.active.slug, 'edit-' + pick.active.slug, 'sign-in', 'my-space', 'offers-and-needs', 'editorial-panel', 'invite-' + 'a'.repeat(64), 'withdraw', 'i-does-not-exist-xyz', 'no-such-route'];
 
 (async () => {
   const srv = await start(0), BASE = 'http://127.0.0.1:' + srv.address().port + '/';
@@ -86,6 +87,8 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     page.on('console', m => {
       const tx = m.text();
       if (/GL Driver Message/.test(tx)) { R.glNoise++; return; }
+      // respostas 404/429 do servidor simulado são deliberadas (link inválido, limite); o navegador as registra como erro de rede
+      if (/^supabase-mock/.test(tag) && /Failed to load resource: the server responded with a status of (404|429)/.test(tx)) { R.mockHttpErrors = (R.mockHttpErrors || 0) + 1; return; }
       if (m.type() === 'error' || (m.type() === 'warning' && /i18n|Content Security Policy/i.test(tx))) R.consoleErrors.push(tag + ': ' + m.type() + ': ' + tx);
       if (/Content Security Policy/i.test(tx)) R.cspViolations.push(tag + ': ' + tx);
     });
@@ -123,12 +126,12 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     }
   }
   const sw = R.sweep;
-  check('Varredura: ' + sw.length + ' telas (25 rotas + mapa) × PT/EN × 360/1280 sem rolagem horizontal', sw.every(s => !s.overflow), sw.filter(s => s.overflow).map(s => s.lang + s.vp + s.route + ' sw=' + s.sw + ' ' + s.wide.join(',')));
+  check('Varredura: ' + sw.length + ' telas (26 rotas + mapa) × PT/EN × 360/1280 sem rolagem horizontal', sw.every(s => !s.overflow), sw.filter(s => s.overflow).map(s => s.lang + s.vp + s.route + ' sw=' + s.sw + ' ' + s.wide.join(',')));
   check('Varredura: exatamente 1 h1 por tela', sw.every(s => s.h1 === 1), sw.filter(s => s.h1 !== 1).map(s => s.lang + s.vp + s.route + ':' + s.h1));
   check('Varredura: lang do documento correto (pt-BR / en)', sw.every(s => s.docLang === (s.lang === 'pt' ? 'pt-BR' : 'en')), sw.filter(s => s.docLang !== (s.lang === 'pt' ? 'pt-BR' : 'en')).map(s => s.lang + s.route));
   check('Varredura: landmarks header/nav/main/footer em todas', sw.every(s => s.landmarks));
   check('Varredura: nenhuma faixa ou selo de "demonstração"', sw.every(s => !s.demo), sw.filter(s => s.demo).map(s => s.route));
-  check('Modo static: nenhuma tela com conta mostra formulário de envio (tela honesta "em breve")', sw.filter(s => /^(contato|contact|indicar|suggest|retirar|withdraw|corrigir|correct|reivindicar|claim|conectar|connect|editar|edit|entrar|sign-in|meu-espaco|my-space|ofertas|offers|painel|editorial|convite|invite)/.test(s.route)).every(s => s.forms === 0));
+  check('Modo static: nenhuma tela com conta mostra formulário de envio (tela honesta "em breve")', sw.filter(s => /^(contato|contact|indicar|suggest|retirar|withdraw|confirmar-retirada|confirm-withdrawal|corrigir|correct|reivindicar|claim|conectar|connect|editar|edit|entrar|sign-in|meu-espaco|my-space|ofertas|offers|painel|editorial|convite|invite)/.test(s.route)).every(s => s.forms === 0));
   check('Mapa: marcadores por cidade visíveis nas 4 combinações', sw.filter(s => s.route === 'explore-map').every(s => s.markers > 0), sw.filter(s => s.route === 'explore-map').map(s => s.markers));
   check('Mapa: legenda diz "posição = centro da cidade"', sw.filter(s => s.route === 'explore-map').every(s => s.legendCity));
 
@@ -302,7 +305,8 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
 
   /* ---------- 7. modo supabase com API simulada (interceptação; nenhum recurso em nuvem) ----------
      Confere o adaptador supabase contra o contrato: paginação por chave em entity_list (2 páginas),
-     entity_page, sister_initiatives, attribution_sources, request_takedown (oculta na hora) e honeypot. */
+     entity_page, sister_initiatives, attribution_sources, request_takedown (nunca oculta: link por e-mail ou fila),
+     confirm_takedown (rota de confirmação) e honeypot. */
   {
     const SB = 'https://mock.supabase.co';
     const uuid = i => '00000000-0000-4000-8000-' + String(i).padStart(12, '0');
@@ -312,6 +316,7 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
       activity_badge: x.activity_badge, activity_month: x.last_activity ? x.last_activity + '-01' : null, summary_pt: x.summary_pt, summary_en: x.summary_en, summary_en_state: x.summary_en ? 'machine_unreviewed' : null,
       website_url: x.own_url, is_managed: false, has_offers: false }));
     const hidden = new Set(), calls = [];
+    const TOK_OK = 'c0ffee00'.repeat(8), TOK_Q = 'feedface'.repeat(8), TOK_BAD = '0123abcd'.repeat(8);
     const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PATCH,DELETE,OPTIONS', 'access-control-expose-headers': '*', 'content-type': 'application/json' };
     const ctx = await ctxFor('pt', 1280, 800);
     await ctx.route(/\/config\.js$/, r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "window.RBC_CONFIG={MODE:'supabase',SUPABASE_URL:'" + SB + "',SUPABASE_ANON_KEY:'anon-test-key',SITE_URL:''};" }));
@@ -330,7 +335,15 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
       if (fn === 'entity_page') { const x = rows.find(y => y.slug === body.p_slug && !hidden.has(y.slug)); if (!x) return json(null); const src = ITEMS.find(y => y.slug === x.slug);
         return json({ id: x.id, slug: x.slug, canonical_slug: x.slug, sources: [{ name: src.source_name, url: src.source_url, accessed_at: '2026-11-01', licence: null }], attribution: src.licence_note, offers_needs: [{ id: uuid(9002), kind: 'need', topic: 'space', title: 'Sala para oficina', description: 'Teste de necessidade', valid_until: '2027-02-28' }], is_managed: false }); }
       if (fn === 'sister_initiatives') return json(rows.slice(5, 8).map(x => ({ relation: 'same_family_other_country', entity_id: x.id, slug: x.slug, name: x.name, country_code: x.country_code, city: x.city, families: x.families, shared_families: x.families.slice(0, 1), activity_badge: x.activity_badge })));
-      if (fn === 'request_takedown') { const x = rows.find(y => y.id === body.p_entity); if (x) hidden.add(x.slug); return json({ request_id: uuid(7001), hidden: !!x }); }
+      if (fn === 'request_takedown') {   // contrato 1.2: nunca oculta; com e-mail pede confirmação, sem e-mail vai para a fila; limite → 54000
+        if (/LIMITE/.test(body.p_reason || '')) return json({ code: '54000', message: 'limite de envios excedido; tente mais tarde' }, 429);
+        return json(body.p_email ? { request_id: uuid(7001), hidden: false, needs_confirmation: true, queued: false } : { request_id: uuid(7001), hidden: false, needs_confirmation: false, queued: true });
+      }
+      if (fn === 'confirm_takedown') {
+        if (body.p_token === TOK_OK) { hidden.add(pick.active.slug); return json({ hidden: true, queued: false }); }
+        if (body.p_token === TOK_Q) return json({ hidden: false, queued: true });
+        return json({ code: 'P0002', message: 'link inválido ou vencido' }, 404);
+      }
       if (fn === 'send_contact_message') return json(uuid(7002));
       return json({ code: 'PGRST202', message: 'mock: função não simulada ' + fn }, 404);
     });
@@ -343,19 +356,85 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     await page.waitForFunction(() => !document.querySelector('#poffers .loading') && !document.querySelector('#psis .loading'), null, { timeout: 8000 }).catch(() => {});
     const pinfo = await page.evaluate(() => ({ offers: document.getElementById('poffers').innerText, sis: document.querySelectorAll('#psis .fcard').length, src: document.getElementById('psrc').innerText, connect: !!document.querySelector('.actlist a[href^="#conectar-"]') }));
     check('Supabase (simulado): ficha usa entity_page (ofertas/necessidades, fonte com data) e sister_initiatives', /Sala para oficina/.test(pinfo.offers) && pinfo.sis === 3 && /consultada em nov\/2026/.test(pinfo.src) && pinfo.connect, pinfo);
+    /* --- Retirar do mapa: o pedido nunca oculta; com e-mail pede confirmação, sem e-mail vai para a fila --- */
+    const send = async (reason, email, rel) => {
+      await page.goto(BASE + '#sobre'); await ready(page);   // sai da rota para o formulário ser montado de novo
+      await page.goto(BASE + '#retirar-' + target.slug); await ready(page);
+      await page.check('#f-relation-' + (rel || 0)); await page.fill('#f-reason', reason);
+      if (email) await page.fill('#f-email', email);
+      await page.waitForTimeout(3200); await page.click('#wform [type=submit]');
+      await page.waitForSelector('.result, #wform .err:not([hidden])', { timeout: 8000 }).catch(() => {});
+      return page.textContent('main').catch(() => '');
+    };
     await page.goto(BASE + '#retirar-' + target.slug); await ready(page);
-    const hasForm = await page.locator('#wform textarea').count();
-    await page.check('#f-relation-0'); await page.fill('#f-reason', 'Pedimos a retirada desta ficha, por favor.');
-    await page.waitForTimeout(3200); await page.click('#wform [type=submit]');
-    await page.waitForSelector('.result', { timeout: 8000 }).catch(() => {});
-    const res = await page.textContent('.result').catch(() => '');
+    const hasForm = await page.locator('#wform textarea').count(), hasEmail = await page.locator('#wform input[type=email]').count();
+    const formText = await page.textContent('main');
+    check('Supabase (simulado): formulário de retirada tem o campo e-mail (opcional) com o texto exato da decisão, sem prometer retirada imediata',
+      hasForm === 1 && hasEmail === 1 && formText.includes('Com e-mail, a ficha sai do ar assim que você clicar no link que vamos enviar. Sem e-mail, o pedido vai para a moderação, que responde em até 72 horas.') && !/na hora|imediat/i.test(formText), { hasForm, hasEmail });
+    const resMail = await send('Pedimos a retirada desta ficha, por favor.', 'pessoa@example.org');
     const tk = calls.find(c => c.fn === 'request_takedown');
-    check('Supabase (simulado): "Retirar do mapa" sem login chama request_takedown com o uuid da ficha e honeypot vazio', hasForm === 1 && tk && tk.body.p_entity === tRow.id && tk.body.p_relation === 'representative' && tk.body.p_hp === null && /retirada do mapa/.test(res), { hasForm, tk, res });
+    check('Supabase (simulado): com e-mail, chama request_takedown(uuid, p_email, honeypot vazio) e mostra "Enviamos um link para o seu e-mail"',
+      tk && tk.body.p_entity === tRow.id && tk.body.p_relation === 'representative' && tk.body.p_hp === null && tk.body.p_email === 'pessoa@example.org' && /Enviamos um link para o seu e-mail/.test(resMail) && /continua no ar até você confirmar/.test(resMail), { tk, resMail: resMail.slice(0, 300) });
+    const resQ = await send('Pedimos a retirada desta ficha, sem e-mail.', '');
+    const tk2 = calls.filter(c => c.fn === 'request_takedown')[1];
+    check('Supabase (simulado): sem e-mail, p_email = null e a tela diz "Pedido na fila da moderação" (resposta em até 72 horas, ficha no ar)',
+      tk2 && tk2.body.p_email === null && /Pedido na fila da moderação/.test(resQ) && /72 horas/.test(resQ) && /continua no ar/.test(resQ), { tk2, resQ: resQ.slice(0, 300) });
+    const nReq = calls.filter(c => c.fn === 'request_takedown').length;
+    await page.goto(BASE + '#sobre'); await ready(page);
+    await page.goto(BASE + '#retirar-' + target.slug); await ready(page);
+    await page.check('#f-relation-0'); await page.fill('#f-reason', 'Pedimos a retirada desta ficha, por favor.'); await page.fill('#f-email', 'sem-arroba');
+    await page.waitForTimeout(3200); await page.click('#wform [type=submit]'); await page.waitForTimeout(400);
+    check('Supabase (simulado): e-mail inválido é barrado no formulário, sem chamar o servidor', calls.filter(c => c.fn === 'request_takedown').length === nReq && (await page.locator('#f-email-err:not([hidden])').count()) === 1);
+    const resLim = await send('LIMITE: pedido que o servidor recusa por excesso.', 'pessoa@example.org');
+    check('Supabase (simulado): limite atingido (54000) tem tela própria "Limite de pedidos atingido"', /Limite de pedidos atingido/.test(resLim) && /formulário de contato/.test(resLim), resLim.slice(0, 300));
     await page.goto(BASE + '#explorar'); await ready(page);
     const c1 = +(await page.textContent('#xres-h')).replace(/\D/g, '');
     await page.goto(BASE + '#i-' + target.slug); await ready(page); await page.waitForTimeout(600);
+    const still = await page.textContent('h1');
+    check('Supabase (simulado): depois dos pedidos (link enviado, fila, limite) a ficha continua na lista e a rota abre normalmente', c1 === ITEMS.length && !/indisponível ou retirada/.test(still), { c1, still });
+
+    /* --- rota de confirmação #confirmar-retirada-<token> --- */
+    const cwOpened = [];   /* abrir o link não pode chamar o servidor; só o clique em "Confirmar a retirada" */
+    const cw = async (hash, wait) => {
+      await page.goto(BASE + hash); await page.waitForTimeout(500);
+      const n0 = calls.filter(c => c.fn === 'confirm_takedown').length;
+      if (await page.locator('#cw-go').count()) {
+        await page.waitForTimeout(800); cwOpened.push(calls.filter(c => c.fn === 'confirm_takedown').length === n0);
+        await page.click('#cw-go');
+      }
+      await page.waitForSelector('.result', { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(300); return page.textContent('main');
+    };
+    const nConf0 = calls.filter(c => c.fn === 'confirm_takedown').length;
+    const tBad = await cw('#confirmar-retirada-' + TOK_BAD);
+    check('Supabase (simulado): link desconhecido ou vencido → "Link inválido ou vencido" (erro genérico) com atalho para novo pedido', /Link inválido ou vencido/.test(tBad) && (await page.locator('main a[href^="#retirar"]').count()) === 1, tBad.slice(0, 200));
+    const nBefore = calls.filter(c => c.fn === 'confirm_takedown').length;
+    const tMal = await cw('#confirmar-retirada-' + 'z'.repeat(64));
+    const tMal2 = await cw('#confirmar-retirada-abc123');
+    check('Supabase (simulado): token malformado → "Link inválido ou vencido" sem chamar o servidor', /Link inválido ou vencido/.test(tMal) && /Link inválido ou vencido/.test(tMal2) && calls.filter(c => c.fn === 'confirm_takedown').length === nBefore, { tMal: tMal.slice(0, 120) });
+    const tQ = await cw('#confirmar-retirada-' + TOK_Q);
+    check('Supabase (simulado): confirmação barrada pelo disjuntor → "Pedido na fila da moderação"', /Pedido na fila da moderação/.test(tQ) && /72 horas/.test(tQ), tQ.slice(0, 200));
+    await page.goto(BASE + '#explorar'); await ready(page);
+    check('Supabase (simulado): pedido na fila não tira a ficha da lista', +(await page.textContent('#xres-h')).replace(/\D/g, '') === ITEMS.length);
+    const tOk = await cw('#confirmar-retirada-' + TOK_OK);
+    const cc = calls.filter(c => c.fn === 'confirm_takedown').pop();
+    check('Supabase (simulado): link válido chama confirm_takedown(p_token) e mostra "Ficha retirada"', /Ficha retirada/.test(tOk) && cc && cc.body.p_token === TOK_OK && calls.filter(c => c.fn === 'confirm_takedown').length > nConf0, tOk.slice(0, 200));
+    await page.screenshot({ path: path.join(SHOTS, 'retirada_confirmada_pt.png') }); R.shots.push('retirada_confirmada_pt.png');
+    await page.goto(BASE + '#explorar'); await ready(page);
+    const c2 = +(await page.textContent('#xres-h')).replace(/\D/g, '');
+    await page.goto(BASE + '#i-' + target.slug); await ready(page); await page.waitForTimeout(600);
     const gone = await page.textContent('h1');
-    check('Supabase (simulado): ficha retirada some na hora da lista e dos contadores, e a rota antiga diz "indisponível ou retirada"', c1 === ITEMS.length - 1 && /indisponível ou retirada/.test(gone), { c1, gone });
+    check('Supabase (simulado): ficha confirmada some da lista e dos contadores, e a rota antiga diz "indisponível ou retirada"', c2 === ITEMS.length - 1 && /indisponível ou retirada/.test(gone), { c2, gone });
+    /* --- inglês --- */
+    check('Supabase (simulado): abrir o link de confirmação não confirma sozinho (só o botão chama confirm_takedown)', cwOpened.length >= 3 && cwOpened.every(Boolean), cwOpened);
+    await page.goto(BASE + '#confirm-withdrawal-' + TOK_Q); await page.waitForTimeout(500); if (await page.locator('#cw-go').count()) await page.click('#cw-go'); await page.waitForSelector('.result', { timeout: 8000 }).catch(() => {});
+    await page.click('#lang-en'); await page.waitForTimeout(500);
+    const tEn = await page.textContent('main');
+    await page.goto(BASE + '#confirm-withdrawal-' + TOK_BAD); await page.waitForTimeout(500); if (await page.locator('#cw-go').count()) await page.click('#cw-go'); await page.waitForSelector('.result', { timeout: 8000 }).catch(() => {});
+    const tEnBad = await page.textContent('main');
+    await page.goto(BASE + '#withdraw-' + pick.source.slug); await page.waitForTimeout(600);
+    const tEnForm = await page.textContent('main').catch(() => '');
+    check('Supabase (simulado): inglês — confirmação na fila, link inválido e dica do formulário (72 hours)', /Request queued for moderation/.test(tEn) && /Invalid or expired link/.test(tEnBad) && tEnForm.includes('Without one, the request goes to the moderators, who reply within 72 hours.') && !/immediate|right away|at once/i.test(tEnForm), { tEn: tEn.slice(0, 120), tEnBad: tEnBad.slice(0, 120) });
+    await page.click('#lang-pt'); await page.waitForTimeout(400);
     await page.goto(BASE + '#contato'); await ready(page);
     await page.fill('#f-name', 'Teste'); await page.fill('#f-email', 'teste@example.org'); await page.fill('#f-subject', 'Assunto'); await page.fill('#f-body', 'Mensagem de teste com mais de dez caracteres.');
     await page.evaluate(() => { document.getElementById('f-website').value = 'spam'; });

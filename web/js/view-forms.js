@@ -56,7 +56,7 @@
     RBC.focusEl(RBC.qs('h2', zone));
   };
   /* run: () => Promise; onOk(data) devolve [titulo, html] */
-  F.submit = function (form, btn, run, onOk) {
+  F.submit = function (form, btn, run, onOk, onErr) {
     var out = RBC.qs('.formout', form.parentNode) || RBC.qs('.formout', form);
     btn.disabled = true; btn.setAttribute('aria-busy', 'true');
     var lbl = RBC.qs('span', btn), orig = lbl ? lbl.textContent : '';
@@ -67,6 +67,8 @@
       F.result(out, 'ok', r[0], r[1]);
     }, function (err) {
       btn.disabled = false; btn.removeAttribute('aria-busy'); if (lbl) lbl.textContent = orig;
+      var custom = onErr ? onErr(err) : null;   /* onErr devolve [titulo, html] para erros que têm tela própria */
+      if (custom) { form.hidden = true; F.result(out, 'ok', custom[0], custom[1]); return; }
       F.result(out, 'error', t('err.title'), '<p>' + esc(F.errMsg(err)) + '</p>');
     });
   };
@@ -97,7 +99,7 @@
       (e ? F.entityHead(e) + body(e) : F.picker(routeId)) + '</div>';
   }
 
-  /* ---------- Retirar do mapa (sem login; oculta na hora, de forma preventiva) ---------- */
+  /* ---------- Retirar do mapa (sem login; com e-mail a ficha sai do ar quando o link é confirmado; sem e-mail vai para a fila) ---------- */
   var W = RBC.views.withdraw = { needsData: true };
   W.title = function () { return t('withdraw'); };
   W.render = function (r) {
@@ -108,6 +110,7 @@
         ui.group({ name: 'relation', type: 'radio', label: t('withdraw.relation'), required: true, options: ['representative', 'member', 'mentioned', 'other'].map(function (k) { return [k, t('withdraw.rel.' + k)]; }) }) +
         ui.input({ name: 'reason', label: t('withdraw.reason'), multiline: true, required: true, maxlength: 2000, hint: esc(t('withdraw.reason_hint')) }) +
         ui.input({ name: 'contact', label: t('withdraw.contact'), maxlength: 200, hint: esc(t('withdraw.contact_hint')) }) +
+        ui.input({ name: 'email', type: 'email', label: t('withdraw.email'), maxlength: 200, autocomplete: 'email', hint: esc(t('withdraw.email_hint')) }) +
         ui.honeypot() + '<p class="actions">' + ui.btn(t('withdraw.send'), { type: 'submit', icon: 'eye-off', kind: 'danger' }) + '</p></form><div class="formout"></div>';
     });
   };
@@ -119,15 +122,67 @@
       ev.preventDefault(); var v = ui.read(form), errs = [];
       if (!v.relation) errs.push(['relation', t('withdraw.err.relation')]);
       if (!F.len(v.reason, 10, 2000)) errs.push(['reason', t('form.err.len', { min: 10, max: 2000 })]);
+      var email = (v.email || '').trim();
+      if (email && (email.length > 200 || !/^[^@\s<>"]+@[^@\s<>"]+\.[A-Za-z]{2,}$/.test(email))) errs.push(['email', t('form.err.email')]);
       if (!ui.showErrors(form, errs) || !F.spamGuard(form, started)) return;
+      var back = '<p>' + ui.btn(t('nav.explore'), { href: RBC.href('explore'), kind: 'secondary', icon: 'search' }) + '</p>';
       F.submit(form, RBC.qs('[type=submit]', form), function () {
-        return RBC.db.call('request_takedown', { p_entity: e.id, p_reason: v.reason, p_relation: v.relation, p_contact: v.contact || null, p_locale: RBC.state.lang, p_hp: F.hp(form) });
+        return RBC.db.call('request_takedown', { p_entity: e.id, p_reason: v.reason, p_relation: v.relation, p_contact: v.contact || null, p_locale: RBC.state.lang, p_hp: F.hp(form), p_email: email || null });
       }, function (data) {
-        var hidden = data && data.hidden;
-        if (hidden) RBC.dropLocal(e.slug);
-        return [t(hidden ? 'withdraw.ok_hidden' : 'withdraw.ok_queued'), '<p>' + esc(t(hidden ? 'withdraw.ok_hidden_text' : 'withdraw.ok_queued_text')) + '</p><p>' + ui.btn(t('nav.explore'), { href: RBC.href('explore'), kind: 'secondary', icon: 'search' }) + '</p>'];
+        /* O pedido nunca oculta a ficha: nada some deste navegador até a confirmação pelo link (rota confirmWithdraw). */
+        var confirm = data && data.needs_confirmation === true;
+        return [t(confirm ? 'withdraw.ok_confirm' : 'withdraw.ok_queued'), '<p>' + esc(t(confirm ? 'withdraw.ok_confirm_text' : 'withdraw.ok_queued_text')) + '</p>' + back];
+      }, function (err) {
+        if (err && String(err.code) === '54000') return [t('withdraw.limit'), '<p>' + esc(t('withdraw.limit_text')) + '</p><p>' + ui.btn(t('soon.use_contact'), { href: RBC.href('contact'), icon: 'letter' }) + '</p>'];
+        return null;
       });
     });
+  };
+
+  /* ---------- Confirmar a retirada (link enviado por e-mail: #confirmar-retirada-<token>) ---------- */
+  var CW = RBC.views.confirmWithdraw = { needsData: false }, cwDone = {}, cwBusy = {};
+  CW.title = function () { return t('confirmwd'); };
+  function cwBox(kind, title, text, withNew) {
+    return '<div class="view--narrow">' + ui.pageHead({ eyebrow: t('care.eyebrow'), title: t('confirmwd') }) +
+      '<div class="result result--' + kind + '" role="' + (kind === 'error' ? 'alert' : 'status') + '">' + icon(kind === 'error' ? 'alert' : 'check-circle') +
+      '<div><h2 class="h3" id="page-title" tabindex="-1">' + esc(title) + '</h2><p>' + esc(text) + '</p><p>' +
+      (withNew ? ui.btn(t('confirmwd.new'), { href: RBC.href('withdraw'), icon: 'eye-off' }) + ' ' : '') + ui.btn(t('nav.explore'), { href: RBC.href('explore'), kind: 'secondary', icon: 'search' }) + '</p></div></div></div>';
+  }
+  CW.render = function (r) {
+    if (!RBC.db.caps.write) return F.soon('withdraw', { extra: '<p>' + esc(t('withdraw.soon_extra')) + '</p>' });
+    var res = cwDone[r.param];
+    if (res) return res.html();
+    if (cwBusy[r.param]) return '<div class="view--narrow"><h1 id="page-title" tabindex="-1" class="sr">' + esc(t('confirmwd.loading')) + '</h1>' + ui.loading(2) + '</div>';
+    /* Abrir o link não confirma nada: antivírus e filtros de e-mail visitam links sozinhos. Só o clique confirma. */
+    return '<div class="view--narrow">' + ui.pageHead({ eyebrow: t('care.eyebrow'), title: t('confirmwd'), lead: t('confirmwd.ask_text') }) +
+      '<p class="actions">' + ui.btn(t('confirmwd.go'), { attrs: 'id="cw-go"', icon: 'eye-off' }) + ' ' +
+      ui.btn(t('nav.explore'), { href: RBC.href('explore'), kind: 'secondary', icon: 'search' }) + '</p></div>';
+  };
+  CW.mount = function (el, r) {
+    if (!RBC.db.caps.write || cwDone[r.param]) return;
+    var token = r.param;
+    function finish(res) { cwDone[token] = res; if (RBC.current && RBC.current.route && RBC.current.route.id === 'confirmWithdraw' && RBC.current.route.param === token) RBC.render({ focus: true }); }
+    var invalid = { html: function () { return cwBox('error', t('confirmwd.invalid'), t('confirmwd.invalid_text'), true); } };
+    if (!/^[0-9a-f]{64}$/.test(token)) { finish(invalid); return; }   /* formato errado: nem chama o servidor */
+    var go = el.querySelector('#cw-go');
+    if (!go || cwBusy[token]) return;
+    go.addEventListener('click', function () {
+      if (cwBusy[token]) return;
+      cwBusy[token] = true; RBC.render({ focus: true });
+      confirmNow();
+    });
+    function confirmNow() { RBC.db.call('confirm_takedown', { p_token: token }).then(function (data) {
+      if (data && data.hidden === true) {
+        RBC.reloadData();   /* a ficha some das listas deste navegador */
+        finish({ html: function () { return cwBox('ok', t('confirmwd.ok'), t('confirmwd.ok_text')); } });
+      } else if (data && data.queued === true) finish({ html: function () { return cwBox('ok', t('confirmwd.queued'), t('confirmwd.queued_text')); } });
+      else finish(invalid);
+    }, function (err) {
+      var c = err && String(err.code);
+      if (c === 'network') finish({ html: function () { return cwBox('error', t('err.title'), t('err.network')); } });
+      else if (c === '54000') finish({ html: function () { return cwBox('error', t('err.title'), t('err.rate')); } });
+      else finish(invalid);   /* qualquer outra falha: erro genérico, sem dizer o motivo */
+    }); }
   };
 
   /* ---------- Corrigir (e relatar exposição ou abuso) ---------- */

@@ -99,7 +99,7 @@
     return loading;
   };
   RBC.reloadData = function () { loading = null; var keep = RBC.data; RBC.data = null; return RBC.loadData().then(null, function (e) { RBC.data = keep; return keep; }); };
-  /* depois de uma retirada preventiva: some na hora de lista, mapa, busca e contadores deste navegador */
+  /* depois de uma retirada feita pela própria gestora (login): some na hora de lista, mapa, busca e contadores deste navegador */
   RBC.dropLocal = function (slug) {
     if (!RBC.data) return;
     RBC.data = index(RBC.data.items.filter(function (e) { return e.slug !== slug; }));

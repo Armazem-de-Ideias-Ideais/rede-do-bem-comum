@@ -33,7 +33,8 @@ Decisões aprovadas por Rafael Reinehr em 21/11/2026. Este documento é o contra
 - **E-mails:** uma Supabase Edge Function (Deno) chamada por webhook do banco ou por RPC. Ela envia por Resend as notificações de:
   - pedido de conexão;
   - reivindicação;
-  - formulário de contato e pedido de retirada (estes para o moderador).
+  - formulário de contato e pedido de retirada (estes para o moderador);
+  - confirmação de retirada, com link de uso único (para quem pediu), e alerta de contenção do disjuntor (para o moderador).
   - Segredos `RESEND_API_KEY` e `MODERATOR_EMAIL` só na função.
 - **Repositório:** GitHub, organização `Armazem-de-Ideias-Ideais`, repositório `rede-do-bem-comum` (a criar). Nenhum segredo no repositório.
 
@@ -45,7 +46,7 @@ Decisões aprovadas por Rafael Reinehr em 21/11/2026. Este documento é o contra
    - **iniciativas-irmãs**: mesmas famílias em outros países, mais complementares na mesma cidade;
    - ofertas e necessidades vigentes;
    - botões **"É sua? Reivindique"**, **"Corrigir"** e **"Retirar do mapa"**.
-3. **Retirada.** Pedido sem login (com antispam) **oculta a ficha imediatamente, de forma preventiva**, em mapa, lista, busca, contadores e exportação. O pedido entra na fila do moderador, que confirma a retirada (vira tombstone contra reimportação) ou restaura com justificativa.
+3. **Retirada.** Pedido sem login (com antispam), **sem ocultar nada por si só**. Com e-mail, a ficha só sai do ar, de forma preventiva, em mapa, lista, busca, contadores e exportação, **depois que quem pediu confirma por um link de uso único (24 h) enviado ao e-mail**. Sem e-mail, o pedido vai para a fila da moderação (resposta em até 72 h) e a ficha fica no ar. Disjuntor: no máximo 3 ocultações por e-mail em 24 h, 15 por hora e 50 por dia no total; acima disso o pedido fica na fila e a moderação recebe um único alerta por janela de 24 h. O moderador confirma a retirada (vira tombstone contra reimportação) ou restaura com justificativa, e pode desfazer em lote as ocultações automáticas de uma janela, IP ou e-mail. Motivo da decisão (21/11/2026): a versão anterior deixava qualquer pessoa, com vários IPs ou um script, ocultar centenas de fichas por dia.
 4. **Conta** por link mágico. A conta é privada; não cria perfil público.
 5. **Reivindicação** de ficha. Verificação por um de três caminhos:
    - (a) e-mail no mesmo domínio do site próprio;

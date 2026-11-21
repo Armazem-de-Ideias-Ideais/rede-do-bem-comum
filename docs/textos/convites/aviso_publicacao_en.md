@@ -14,7 +14,7 @@ You can, with no sign-up and no rush:
 
 - **Claim** the listing, to look after it and tell your story your way;
 - **Correct** anything wrong or out of date;
-- **Remove from the map**, if you would rather not be here. The listing disappears at once, no explanation needed.
+- **Remove from the map**, if you would rather not be here. No login needed: the listing comes down as soon as you confirm by email (or, without an email, after moderators review it within 72 hours), with no explanation needed.
 
 If you prefer to do nothing, that is fine too. And if this is not the right channel, please feel free to pass it on.
 

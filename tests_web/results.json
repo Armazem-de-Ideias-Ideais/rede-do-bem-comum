@@ -1,5 +1,5 @@
 {
- "started": "2026-11-21T13:55:51.784Z",
+ "started": "2026-11-21T22:51:18.986Z",
  "checks": [
   {
    "name": "public.json: cada registro tem exatamente os 22 campos públicos",
@@ -27,9 +27,9 @@
    "detail": null
   },
   {
-   "name": "public.json: 1.717 − 171 = 1546 registros",
+   "name": "public.json: 1.717 − 171 (segurar) − 2 (encerramento) = 1544 registros",
    "ok": true,
-   "detail": 1546
+   "detail": 1544
   },
   {
    "name": "public.json: coordenadas só com precisão \"city\"",
@@ -62,18 +62,18 @@
    "detail": []
   },
   {
-   "name": "i18n: 441 chaves usadas, 578 em PT e 578 em EN, nenhuma ausente",
+   "name": "i18n: 456 chaves usadas, 594 em PT e 594 em EN, nenhuma ausente",
    "ok": true,
    "detail": {
-    "used": 441,
+    "used": 456,
     "missing": [],
     "asym": [],
-    "pt": 578,
-    "en": 578
+    "pt": 594,
+    "en": 594
    }
   },
   {
-   "name": "Varredura: 104 telas (25 rotas + mapa) × PT/EN × 360/1280 sem rolagem horizontal",
+   "name": "Varredura: 108 telas (26 rotas + mapa) × PT/EN × 360/1280 sem rolagem horizontal",
    "ok": true,
    "detail": []
   },
@@ -122,13 +122,13 @@
    "ok": true,
    "detail": {
     "ui": [
-     "1546",
+     "1544",
      "88",
      "640",
      "211"
     ],
     "ref": [
-     1546,
+     1544,
      88,
      640
     ]
@@ -140,10 +140,10 @@
    "detail": {
     "ui": [
      350,
-     311,
+     310,
      277,
      226,
-     189,
+     188,
      88,
      53,
      25,
@@ -161,9 +161,9 @@
      "resource": 5,
      "archive": 5,
      "bookshop": 53,
-     "collective": 311,
+     "collective": 310,
      "library": 88,
-     "organization": 189,
+     "organization": 188,
      "movement": 13
     }
    }
@@ -174,24 +174,24 @@
    "detail": []
   },
   {
-   "name": "Explorar: contagem inicial = 1546",
+   "name": "Explorar: contagem inicial = 1544",
    "ok": true,
-   "detail": 1546
+   "detail": 1544
   },
   {
-   "name": "Filtro família (agroecology) = 270",
+   "name": "Filtro família (agroecology) = 269",
    "ok": true,
-   "detail": 270
+   "detail": 269
   },
   {
-   "name": "Filtro família + país (BR) = 61",
+   "name": "Filtro família + país (BR) = 60",
    "ok": true,
-   "detail": 61
+   "detail": 60
   },
   {
-   "name": "Filtro família + país + selo = 51",
+   "name": "Filtro família + país + selo = 50",
    "ok": true,
-   "detail": 51
+   "detail": 50
   },
   {
    "name": "Filtro presença (territorial) = 411",
@@ -226,9 +226,9 @@
    "detail": 4
   },
   {
-   "name": "Atribuição: lista de fontes gerada dos dados (415 fontes)",
+   "name": "Atribuição: lista de fontes gerada dos dados (414 fontes)",
    "ok": true,
-   "detail": 415
+   "detail": 414
   },
   {
    "name": "Atribuição: frase da Karte von Morgen presente",
@@ -262,12 +262,12 @@
     "christiania:9",
     "wooden-shoe-books:7",
     "reparatur-cafe-heddernheim:7",
-    "associacao-quilombola-comunitaria-de-maria-quiteria-aqcomaq:6",
+    "active-distribution:6",
     "cooperativa-coopamare:12",
     "christiania:9",
     "wooden-shoe-books:7",
     "reparatur-cafe-heddernheim:7",
-    "associacao-quilombola-comunitaria-de-maria-quiteria-aqcomaq:6",
+    "active-distribution:6",
     "cooperativa-coopamare:12"
    ]
   },
@@ -282,9 +282,9 @@
    "detail": []
   },
   {
-   "name": "Supabase (simulado): lista completa por paginação de chave (1000 + 546)",
+   "name": "Supabase (simulado): lista completa por paginação de chave (1000 + 544)",
    "ok": true,
-   "detail": 1546
+   "detail": 1544
   },
   {
    "name": "Supabase (simulado): ficha usa entity_page (ofertas/necessidades, fonte com data) e sister_initiatives",
@@ -297,30 +297,119 @@
    }
   },
   {
-   "name": "Supabase (simulado): \"Retirar do mapa\" sem login chama request_takedown com o uuid da ficha e honeypot vazio",
+   "name": "Supabase (simulado): formulário de retirada tem o campo e-mail (opcional) com o texto exato da decisão, sem prometer retirada imediata",
    "ok": true,
    "detail": {
     "hasForm": 1,
+    "hasEmail": 1
+   }
+  },
+  {
+   "name": "Supabase (simulado): com e-mail, chama request_takedown(uuid, p_email, honeypot vazio) e mostra \"Enviamos um link para o seu e-mail\"",
+   "ok": true,
+   "detail": {
     "tk": {
      "fn": "request_takedown",
      "body": {
-      "p_entity": "00000000-0000-4000-8000-000000000316",
+      "p_entity": "00000000-0000-4000-8000-000000000315",
       "p_reason": "Pedimos a retirada desta ficha, por favor.",
       "p_relation": "representative",
       "p_contact": null,
       "p_locale": "pt",
-      "p_hp": null
+      "p_hp": null,
+      "p_email": "pessoa@example.org"
      }
     },
-    "res": "A ficha foi retirada do mapaEla já não aparece no mapa, na lista, na busca nem nos contadores. A moderação vai analisar o pedido.Explorar"
+    "resMail": "Voltar para a fichaCuidar da redeRetirar do mapaSem login. Com e-mail, a ficha sai do mapa, da lista, da busca e dos contadores assim que você clicar no link que vamos enviar. Sem e-mail, o pedido vai para a moderação.ChristianiaComunidade · Copenhague, DinamarcaEste pedido, sozinho, não tira nada d"
    }
   },
   {
-   "name": "Supabase (simulado): ficha retirada some na hora da lista e dos contadores, e a rota antiga diz \"indisponível ou retirada\"",
+   "name": "Supabase (simulado): sem e-mail, p_email = null e a tela diz \"Pedido na fila da moderação\" (resposta em até 72 horas, ficha no ar)",
    "ok": true,
    "detail": {
-    "c1": 1545,
+    "tk2": {
+     "fn": "request_takedown",
+     "body": {
+      "p_entity": "00000000-0000-4000-8000-000000000315",
+      "p_reason": "Pedimos a retirada desta ficha, sem e-mail.",
+      "p_relation": "representative",
+      "p_contact": null,
+      "p_locale": "pt",
+      "p_hp": null,
+      "p_email": null
+     }
+    },
+    "resQ": "Voltar para a fichaCuidar da redeRetirar do mapaSem login. Com e-mail, a ficha sai do mapa, da lista, da busca e dos contadores assim que você clicar no link que vamos enviar. Sem e-mail, o pedido vai para a moderação.ChristianiaComunidade · Copenhague, DinamarcaEste pedido, sozinho, não tira nada d"
+   }
+  },
+  {
+   "name": "Supabase (simulado): e-mail inválido é barrado no formulário, sem chamar o servidor",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "Supabase (simulado): limite atingido (54000) tem tela própria \"Limite de pedidos atingido\"",
+   "ok": true,
+   "detail": "Voltar para a fichaCuidar da redeRetirar do mapaSem login. Com e-mail, a ficha sai do mapa, da lista, da busca e dos contadores assim que você clicar no link que vamos enviar. Sem e-mail, o pedido vai para a moderação.ChristianiaComunidade · Copenhague, DinamarcaEste pedido, sozinho, não tira nada d"
+  },
+  {
+   "name": "Supabase (simulado): depois dos pedidos (link enviado, fila, limite) a ficha continua na lista e a rota abre normalmente",
+   "ok": true,
+   "detail": {
+    "c1": 1544,
+    "still": "Christiania"
+   }
+  },
+  {
+   "name": "Supabase (simulado): link desconhecido ou vencido → \"Link inválido ou vencido\" (erro genérico) com atalho para novo pedido",
+   "ok": true,
+   "detail": "Cuidar da redeConfirmar a retiradaLink inválido ou vencidoEste link já foi usado, venceu (vale por 24 horas) ou está incompleto. Faça um novo pedido de retirada.Fazer um novo pedido Explorar"
+  },
+  {
+   "name": "Supabase (simulado): token malformado → \"Link inválido ou vencido\" sem chamar o servidor",
+   "ok": true,
+   "detail": {
+    "tMal": "Cuidar da redeConfirmar a retiradaLink inválido ou vencidoEste link já foi usado, venceu (vale por 24 horas) ou está inc"
+   }
+  },
+  {
+   "name": "Supabase (simulado): confirmação barrada pelo disjuntor → \"Pedido na fila da moderação\"",
+   "ok": true,
+   "detail": "Cuidar da redeConfirmar a retiradaPedido na fila da moderaçãoRecebemos a sua confirmação, mas a ficha não saiu do ar automaticamente. A moderação analisa o pedido em até 72 horas.Explorar"
+  },
+  {
+   "name": "Supabase (simulado): pedido na fila não tira a ficha da lista",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "Supabase (simulado): link válido chama confirm_takedown(p_token) e mostra \"Ficha retirada\"",
+   "ok": true,
+   "detail": "Cuidar da redeConfirmar a retiradaFicha retiradaA ficha já não aparece no mapa, na lista, na busca nem nos contadores. A moderação vai analisar o pedido: se confirmar, a ficha não volta em novas impor"
+  },
+  {
+   "name": "Supabase (simulado): ficha confirmada some da lista e dos contadores, e a rota antiga diz \"indisponível ou retirada\"",
+   "ok": true,
+   "detail": {
+    "c2": 1543,
     "gone": "Ficha indisponível ou retirada"
+   }
+  },
+  {
+   "name": "Supabase (simulado): abrir o link de confirmação não confirma sozinho (só o botão chama confirm_takedown)",
+   "ok": true,
+   "detail": [
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "name": "Supabase (simulado): inglês — confirmação na fila, link inválido e dica do formulário (72 hours)",
+   "ok": true,
+   "detail": {
+    "tEn": "Caring for the networkConfirm the withdrawalRequest queued for moderationWe received your confirmation, but the listing ",
+    "tEnBad": "Caring for the networkConfirm the withdrawalInvalid or expired linkThis link was already used, has expired (it is valid "
    }
   },
   {
@@ -563,6 +652,22 @@
    "h1": 1,
    "docLang": "pt-BR",
    "title": "Retirar do mapa · Rede do Bem Comum",
+   "landmarks": true,
+   "demo": false,
+   "csp": [],
+   "forms": 0
+  },
+  {
+   "lang": "pt",
+   "vp": "360x740",
+   "route": "confirmar-retirada-a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4",
+   "overflow": false,
+   "sw": 360,
+   "vw": 360,
+   "wide": [],
+   "h1": 1,
+   "docLang": "pt-BR",
+   "title": "Confirmar a retirada · Rede do Bem Comum",
    "landmarks": true,
    "demo": false,
    "csp": [],
@@ -981,6 +1086,22 @@
    "h1": 1,
    "docLang": "pt-BR",
    "title": "Retirar do mapa · Rede do Bem Comum",
+   "landmarks": true,
+   "demo": false,
+   "csp": [],
+   "forms": 0
+  },
+  {
+   "lang": "pt",
+   "vp": "1280x800",
+   "route": "confirmar-retirada-a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4",
+   "overflow": false,
+   "sw": 1280,
+   "vw": 1280,
+   "wide": [],
+   "h1": 1,
+   "docLang": "pt-BR",
+   "title": "Confirmar a retirada · Rede do Bem Comum",
    "landmarks": true,
    "demo": false,
    "csp": [],
@@ -1399,6 +1520,22 @@
    "h1": 1,
    "docLang": "en",
    "title": "Withdraw from the map · Common Good Network",
+   "landmarks": true,
+   "demo": false,
+   "csp": [],
+   "forms": 0
+  },
+  {
+   "lang": "en",
+   "vp": "360x740",
+   "route": "confirm-withdrawal-a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4",
+   "overflow": false,
+   "sw": 360,
+   "vw": 360,
+   "wide": [],
+   "h1": 1,
+   "docLang": "en",
+   "title": "Confirm the withdrawal · Common Good Network",
    "landmarks": true,
    "demo": false,
    "csp": [],
@@ -1817,6 +1954,22 @@
    "h1": 1,
    "docLang": "en",
    "title": "Withdraw from the map · Common Good Network",
+   "landmarks": true,
+   "demo": false,
+   "csp": [],
+   "forms": 0
+  },
+  {
+   "lang": "en",
+   "vp": "1280x800",
+   "route": "confirm-withdrawal-a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4",
+   "overflow": false,
+   "sw": 1280,
+   "vw": 1280,
+   "wide": [],
+   "h1": 1,
+   "docLang": "en",
+   "title": "Confirm the withdrawal · Common Good Network",
    "landmarks": true,
    "demo": false,
    "csp": [],
@@ -2216,7 +2369,7 @@
   {
    "lang": "pt",
    "key": "nocity",
-   "slug": "associacao-quilombola-comunitaria-de-maria-quiteria-aqcomaq",
+   "slug": "active-distribution",
    "res": {
     "name": true,
     "badge": true,
@@ -2311,7 +2464,7 @@
   {
    "lang": "en",
    "key": "nocity",
-   "slug": "associacao-quilombola-comunitaria-de-maria-quiteria-aqcomaq",
+   "slug": "active-distribution",
    "res": {
     "name": true,
     "badge": true,
@@ -2357,18 +2510,27 @@
   "inicio_pt_1280.png",
   "ficha_kvm_pt_1280.png",
   "profile_en_360.png",
+  "retirada_confirmada_pt.png",
   "reivindicar_login_supabase_simulado.png"
  ],
  "privateNameCoincidences": [],
  "emailsInVendor": [],
+ "mockHttpErrors": 2,
  "supabaseMockCalls": [
   "sister_initiatives",
   "entity_page",
   "request_takedown",
+  "request_takedown",
+  "request_takedown",
+  "sister_initiatives",
+  "entity_page",
+  "confirm_takedown",
+  "confirm_takedown",
+  "confirm_takedown",
   "entity_page",
   "send_contact_message"
  ],
- "finished": "2026-11-21T13:57:33.119Z",
- "total": 51,
- "passed": 51
+ "finished": "2026-11-21T22:53:20.414Z",
+ "total": 63,
+ "passed": 63
 }

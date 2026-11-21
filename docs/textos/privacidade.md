@@ -13,7 +13,7 @@ Versão: minuta 1 · Data: 21/11/2026
 - A Rede do Bem Comum é um mapa de **iniciativas** (coletivos, cooperativas, hortas, bibliotecas, redes), não de pessoas.
 - As fichas vêm de **fontes públicas**. Guardamos o mínimo: nome da iniciativa, natureza, temas, cidade e país, site, resumo e a fonte. Não guardamos endereços, nomes de integrantes nem contatos pessoais, e não atribuímos identidade política a ninguém.
 - **Não usamos publicidade, rastreadores de anúncios nem perfis de comportamento.**
-- Se uma ficha é sua e você não quer vê-la aqui, o botão **"Retirar do mapa"** a esconde na hora, sem login.
+- Se uma ficha é sua e você não quer vê-la aqui, o botão **"Retirar do mapa"** a esconde, sem login, assim que você confirmar pelo e-mail (ou, sem e-mail, após análise da moderação em até 72 horas).
 
 ## 1. Quem é responsável
 
@@ -59,6 +59,8 @@ Iniciativas cuja visibilidade pública poderia representar risco (por exemplo, p
 
 Guardamos o que você escrever, o e-mail que informar para resposta e a decisão tomada, para poder responder, cumprir o pedido e provar que o cumprimos. Base: execução do serviço e legítimo interesse; nos pedidos de direitos, também cumprimento de obrigação legal.
 
+**E-mail do pedido de retirada (opcional).** Serve só para enviar o link de confirmação e para a moderação poder responder. Guardamos o endereço em área privada, sem acesso público. O link guardamos apenas como código irreversível. Se o link não for usado em 24 horas, apagamos o endereço e mantemos só um código irreversível dele, usado para limitar abusos (por exemplo, o número de pedidos por endereço por dia). Também guardamos um código irreversível do endereço de rede (IP) por pedido, com o mesmo fim.
+
 ### 2.5 Consentimentos específicos
 
 Algumas escolhas só acontecem com **consentimento próprio, separado, opcional e revogável**: por exemplo, exibir uma identidade política que você queira declarar (dado sensível; LGPD, art. 11, I; GDPR, art. 9(2)(a)), aparecer com localização além da cidade, receber pedidos de conexão ou receber mensagens periódicas. Criar uma conta ou usar o mapa **não** equivale a dar esses consentimentos. Registramos a versão do texto, a data e o escopo de cada consentimento. Você pode revogar quando quiser, tão facilmente quanto deu.
@@ -88,13 +90,14 @@ Esses fornecedores podem tratar dados fora do Brasil e da União Europeia. Para 
 
 Você pode, a qualquer momento: confirmar se tratamos seus dados e acessá-los; corrigi-los; pedir a eliminação; pedir a portabilidade da sua conta; se opor ao tratamento por legítimo interesse; revogar consentimentos; pedir informação sobre com quem compartilhamos; e reclamar à autoridade de proteção de dados (no Brasil, a ANPD; na UE, a autoridade do seu país). (LGPD, art. 18; GDPR, arts. 15 a 22.)
 
-### Retirada imediata e preventiva
+### Retirada preventiva
 
 Na ficha de qualquer iniciativa há o botão **"Retirar do mapa"**. Não exige login.
 
-1. Ao enviar o pedido, a ficha é **ocultada imediatamente**, de forma preventiva, no mapa, na lista, na busca, nos contadores e na exportação. Isso vale mesmo antes de confirmarmos quem pede.
-2. A moderação analisa o pedido. Se confirma a retirada, guardamos um **registro mínimo** que impede a ficha de voltar numa futura importação. Se tiver havido engano ou abuso, a ficha só é restaurada com justificativa registrada.
-3. Antes de qualquer restauração de backup, reaplicamos as retiradas.
+1. **Com e-mail:** enviamos ao endereço informado um link de confirmação, de uso único e válido por 24 horas. Assim que você clica nele, a ficha é **ocultada**, de forma preventiva, no mapa, na lista, na busca, nos contadores e na exportação. Isso vale mesmo antes de confirmarmos quem pede, mas só depois de provada a posse do e-mail: o pedido, sozinho, não oculta nada, para impedir retiradas em massa feitas por terceiros. Se chegarem pedidos demais de uma vez, o sistema pode deixar o pedido na fila em vez de ocultar automaticamente.
+2. **Sem e-mail:** o pedido vai para a fila da moderação, que responde em até 72 horas. A ficha continua no ar até essa análise.
+3. A moderação analisa o pedido. Se confirma a retirada, guardamos um **registro mínimo** que impede a ficha de voltar numa futura importação. Se tiver havido engano ou abuso, a ficha só é restaurada com justificativa registrada.
+4. Antes de qualquer restauração de backup, reaplicamos as retiradas.
 
 **Limites que dizemos com franqueza:** não conseguimos apagar cópias que terceiros já tenham feito (outros sites, buscadores, arquivos da web), nem controlar o que eles mostram. Backups criptografados podem conter a ficha por um período até serem substituídos [prazo a definir]; nesse intervalo ela não é restaurada nem exibida.
 
@@ -132,7 +135,7 @@ Quando mudarmos este aviso de forma relevante, publicaremos a nova versão aqui,
 - The Common Good Network is a map of **initiatives** (collectives, cooperatives, gardens, libraries, networks), not of people.
 - Listings come from **public sources**. We keep the minimum: initiative name, nature, themes, city and country, website, summary and source. We do not store street addresses, member names or personal contacts, and we do not assign a political identity to anyone.
 - **No advertising, no ad trackers, no behavioural profiling.**
-- If a listing is yours and you would rather not be here, **"Remove from the map"** hides it at once, no login needed.
+- If a listing is yours and you would rather not be here, **"Remove from the map"** hides it without a login, as soon as you confirm by email (or, without an email, after moderators review it within 72 hours).
 
 ## 1. Who is responsible
 
@@ -178,6 +181,8 @@ Initiatives whose public visibility could put them at risk (for example, those w
 
 We keep what you write, the email you give us to reply, and the decision taken, so we can answer, carry out the request and show that we did. Basis: performance of the service and legitimate interest; for rights requests, also compliance with a legal obligation.
 
+**Email on a withdrawal request (optional).** It is used only to send the confirmation link and so moderators can reply. We keep the address in a private area with no public access. We keep the link only as an irreversible code. If the link is not used within 24 hours, we delete the address and keep only an irreversible code of it, used to limit abuse (for example, the number of requests per address per day). We also keep an irreversible code of the network (IP) address per request, for the same purpose.
+
 ### 2.5 Specific consents
 
 Some choices happen only with **separate, optional, revocable consent**: for example, showing a political identity you wish to declare (sensitive data; LGPD art. 11 I; GDPR art. 9(2)(a)), appearing with a location beyond the city, receiving connection requests, or receiving periodic messages. Creating an account or using the map does **not** amount to those consents. We record the text version, date and scope of each consent. You can withdraw it whenever you like, as easily as you gave it.
@@ -207,13 +212,14 @@ These providers may process data outside Brazil and the European Union. For such
 
 At any time you may: confirm whether we process your data and access it; correct it; request erasure; request portability of your account; object to processing based on legitimate interest; withdraw consents; ask with whom we share data; and complain to a data protection authority (in Brazil, the ANPD; in the EU, your country's authority). (LGPD art. 18; GDPR arts. 15 to 22.)
 
-### Immediate, preventive withdrawal
+### Preventive withdrawal
 
 Every initiative's page has a **"Remove from the map"** button. No login is needed.
 
-1. When you submit the request, the listing is **hidden immediately**, as a precaution, from the map, list, search, counters and export. This happens even before we confirm who is asking.
-2. Moderation reviews the request. If the withdrawal is confirmed, we keep a **minimal record** that stops the listing from returning in a future import. If there was a mistake or abuse, the listing is restored only with a recorded justification.
-3. Before any backup restoration, we reapply withdrawals.
+1. **With an email:** we send the address you gave a confirmation link, single-use and valid for 24 hours. As soon as you click it, the listing is **hidden**, as a precaution, from the map, list, search, counters and export. This applies even before we confirm who is asking, but only once ownership of the email is proven: the request alone hides nothing, to prevent mass withdrawals made by third parties. If too many requests arrive at once, the system may leave the request in the queue instead of hiding automatically.
+2. **Without an email:** the request goes to the moderation queue, which replies within 72 hours. The listing stays up until that review.
+3. Moderation reviews the request. If the withdrawal is confirmed, we keep a **minimal record** that stops the listing from returning in a future import. If there was a mistake or abuse, the listing is restored only with a recorded justification.
+4. Before any backup restoration, we reapply withdrawals.
 
 **Limits, stated plainly:** we cannot erase copies that third parties have already made (other sites, search engines, web archives), nor control what they display. Encrypted backups may contain the listing until they are replaced [period to be defined]; during that time it is neither restored nor shown.
 

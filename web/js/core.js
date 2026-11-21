@@ -73,6 +73,7 @@
     { id: 'contact', pt: 'contato', en: 'contact' },
     { id: 'suggest', pt: 'indicar', en: 'suggest' },
     { id: 'withdraw', pt: 'retirar', en: 'withdraw', param: true },
+    { id: 'confirmWithdraw', pt: 'confirmar-retirada', en: 'confirm-withdrawal', param: true, paramOnly: true },
     { id: 'correct', pt: 'corrigir', en: 'correct', param: true },
     { id: 'claim', pt: 'reivindicar', en: 'claim', param: true },
     { id: 'connect', pt: 'conectar', en: 'connect', param: true },

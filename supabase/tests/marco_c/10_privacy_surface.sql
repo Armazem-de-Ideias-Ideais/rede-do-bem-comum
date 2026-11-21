@@ -11,14 +11,14 @@ select is((select count(*)::int from pg_tables t where t.schemaname = 'app'
               or has_table_privilege('anon', format('%I.%I', t.schemaname, t.tablename), 'DELETE'))), 0,
           'anon: nenhum privilégio em tabela de app (inclui as novas do Marco C)');
 select is((select count(*)::int from unnest(array['takedown_requests','connect_requests','contact_messages','suggestions',
-            'invite_candidates','invitations','notification_outbox','notification_secrets','shared_domains','entity_slug_history']) t
+            'invite_candidates','invitations','notification_outbox','notification_secrets','shared_domains','entity_slug_history','takedown_tokens']) t
             where has_table_privilege('authenticated', format('app.%I', t), 'SELECT')), 0,
           'authenticated: nenhuma leitura direta das tabelas novas (só por função verificada)');
 select is((select count(*)::int from pg_tables where schemaname = 'app' and not rowsecurity), 0, 'RLS ligada em 100% das tabelas de app');
 select is((select count(*)::int from information_schema.columns where table_schema in ('api','pub')
             and column_name in ('research_id','research_notes','lot','exposure','audit','email','sender_email','contact',
                                 'from_contact','to_contact','token_hash','ip_hash','verify_email','code_hash','account_id',
-                                'claimant_id','statement','payload','reason','body_private')), 0,
+                                'claimant_id','statement','payload','reason','body_private','email_hash','email_domain','email_domain_matches')), 0,
           'nenhuma coluna interna ou privada em api/pub');
 select is((select count(*)::int from information_schema.columns where table_schema = 'app'
             and column_name in ('research_notes','lot','exposure','audit')), 0,
@@ -36,7 +36,7 @@ select is((select count(*)::int from pg_views v join pg_class c on c.relname = v
 select set_eq($$ select p.proname::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                   where n.nspname = 'app' and has_function_privilege('anon', p.oid, 'EXECUTE') and p.proname !~ '^_' $$,
               $$ values ('request_takedown'),('report'),('suggest_initiative'),('send_contact_message'),('invite_preview'),
-                        ('invite_decline'),('submit_report') $$,
+                        ('invite_decline'),('submit_report'),('confirm_takedown') $$,
               'anon executa somente as funções públicas previstas em app');
 select ok(not has_function_privilege('authenticated', 'api.notification_claim(bigint)', 'EXECUTE')
           and not has_function_privilege('anon', 'api.notification_claim(bigint)', 'EXECUTE')

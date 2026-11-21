@@ -52,7 +52,7 @@
   - **Editar:** campos diretos e campos em revisão (nome e país), mais a retirada pela própria gestora.
   - **Conectar** e **Ofertas e necessidades** (mural público mais publicação e remoção).
   - **Painel editorial:** 8 filas de `mod_list` com decisões auditáveis. O link de convite aparece uma única vez.
-- **Sem login (modo supabase).** Contato, Retirar do mapa, Corrigir (correção, exposição, abuso) e Indicar. Todas têm honeypot (`p_hp`) e tempo mínimo de 3 s. A retirada oculta a ficha na hora também no navegador de quem pediu.
+- **Sem login (modo supabase).** Contato, Retirar do mapa, Corrigir (correção, exposição, abuso) e Indicar. Todas têm honeypot (`p_hp`) e tempo mínimo de 3 s. O pedido de retirada **nunca oculta** a ficha: com e-mail (opcional) a tela diz "Enviamos um link para o seu e-mail"; sem e-mail, "Pedido na fila da moderação"; limite (`54000`) tem tela própria. A ficha só some depois da rota de confirmação `#confirmar-retirada-<token>` (EN: `#confirm-withdrawal-<token>`), que chama `confirm_takedown` e mostra "Ficha retirada", "Pedido na fila da moderação" ou "Link inválido ou vencido". Modo static: "em breve".
 - **Convite** (`#convite-<token>`): prévia, aceite com login e consentimento `convite-2026-11`, e recusa.
 - **Modo static.** Todas essas telas mostram "em breve — enquanto isso, use o formulário de contato", sem formulário e sem simular gravação. No próprio Contato, o texto diz que o formulário ainda não está ativo.
 
@@ -81,7 +81,8 @@
 - **Modo supabase com a API simulada por interceptação (6 verificações):**
   - paginação 1000 + 546;
   - `entity_page` e `sister_initiatives`;
-  - `request_takedown` sem login, com o uuid certo; a ficha some da lista e a rota antiga diz "indisponível ou retirada";
+  - `request_takedown` sem login, com o uuid certo, com e-mail (link enviado) e sem e-mail (fila): a ficha continua na lista; limite `54000`; e-mail inválido barrado no formulário;
+  - rota de confirmação: link válido (ficha some da lista e a rota antiga diz "indisponível ou retirada"), na fila, vencido/inválido e malformado (sem chamar o servidor), em PT e EN;
   - honeypot enviado ao servidor;
   - reivindicação sem sessão pede o link mágico.
 - **Console, CSP e rede:** 0 erros de console, 0 violações de CSP, 0 POST no modo static. Houve 4 avisos "GL Driver Message" do SwiftShader, contados à parte.

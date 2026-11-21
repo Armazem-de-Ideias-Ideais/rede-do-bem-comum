@@ -30,9 +30,9 @@ Cada ficha tem três botões:
 
 - **"É sua? Reivindique."** Prove que representam a iniciativa (por e-mail do mesmo domínio do site, por um código colocado no site ou na rede social, ou por análise manual nossa) e passem a cuidar da ficha: contar a história do seu jeito, escolher categorias, propor correções.
 - **"Corrigir."** Algo está errado ou desatualizado? Diga, e corrigimos. Você não precisa reivindicar a ficha para corrigir.
-- **"Retirar do mapa."** Se prefere não estar aqui, não precisa dar motivo nem fazer login. **A ficha some imediatamente**, do mapa, da lista, da busca, dos contadores e da exportação. Depois, uma pessoa da moderação confirma o pedido. Se confirmada, guardamos um registro mínimo apenas para que a ficha não volte numa próxima importação.
+- **"Retirar do mapa."** Se prefere não estar aqui, não precisa dar motivo nem fazer login. Se informar um e-mail, **a ficha sai do ar assim que você clicar no link que enviamos** para ele: some do mapa, da lista, da busca, dos contadores e da exportação. Sem e-mail, o pedido vai para a fila da moderação, que responde em até 72 horas, e a ficha continua no ar até a análise. Depois, uma pessoa da moderação confirma o pedido. Se confirmada, guardamos um registro mínimo apenas para que a ficha não volte numa próxima importação.
 
-Uma franqueza: não conseguimos apagar cópias que outros sites, buscadores ou arquivos da web já tenham feito. O que está sob nosso controle, escondemos na hora.
+Uma franqueza: não conseguimos apagar cópias que outros sites, buscadores ou arquivos da web já tenham feito. O que está sob nosso controle, escondemos assim que o pedido é confirmado.
 
 Se preferir escrever, use o formulário de contato do site.
 
@@ -81,9 +81,9 @@ Every listing has three buttons:
 
 - **"Is it yours? Claim it."** Show that you represent the initiative (by an email on the same domain as the website, by a code placed on the site or social page, or by our manual review) and take care of the listing: tell the story your way, choose categories, propose corrections.
 - **"Correct."** Something wrong or out of date? Tell us and we will fix it. You do not need to claim the listing to correct it.
-- **"Remove from the map."** If you would rather not be here, you need give no reason and no login. **The listing disappears immediately** from the map, list, search, counters and export. Afterwards, a member of moderation confirms the request. If confirmed, we keep a minimal record only so the listing does not return in a future import.
+- **"Remove from the map."** If you would rather not be here, you need give no reason and no login. If you give an email, **the listing comes down as soon as you click the link we send** to it: it leaves the map, list, search, counters and export. Without an email, the request goes to the moderation queue, which replies within 72 hours, and the listing stays up until it is reviewed. Afterwards, a member of moderation confirms the request. If confirmed, we keep a minimal record only so the listing does not return in a future import.
 
-A word of honesty: we cannot erase copies that other sites, search engines or web archives have already made. What is under our control, we hide at once.
+A word of honesty: we cannot erase copies that other sites, search engines or web archives have already made. What is under our control, we hide as soon as the request is confirmed.
 
 If you prefer to write to us, use the site's contact form.
 

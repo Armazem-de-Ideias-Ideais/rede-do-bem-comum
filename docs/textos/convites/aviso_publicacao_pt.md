@@ -14,7 +14,7 @@ Vocês podem, sem cadastro e sem pressa:
 
 - **Reivindicar** a ficha, para cuidar dela e contar a história do jeito de vocês;
 - **Corrigir** o que estiver errado ou desatualizado;
-- **Retirar do mapa**, se preferirem não estar aqui. A ficha some na hora, sem precisar explicar.
+- **Retirar do mapa**, se preferirem não estar aqui. Sem login: a ficha sai do ar assim que vocês confirmarem pelo e-mail (ou, sem e-mail, após análise da moderação em até 72 horas), sem precisar explicar.
 
 Se não quiserem fazer nada, também está tudo bem. E se este não for o canal certo, fiquem à vontade para repassar.
 

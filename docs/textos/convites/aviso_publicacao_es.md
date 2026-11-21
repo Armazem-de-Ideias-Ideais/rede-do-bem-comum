@@ -14,7 +14,7 @@ Pueden, sin registro y sin prisa:
 
 - **Reivindicar** la ficha, para cuidarla y contar su historia a su manera;
 - **Corregir** lo que esté mal o desactualizado;
-- **Retirar del mapa**, si prefieren no estar aquí. La ficha desaparece al instante, sin necesidad de explicar.
+- **Retirar del mapa**, si prefieren no estar aquí. Sin iniciar sesión: la ficha sale del aire apenas confirmen por correo (o, sin correo, tras el análisis de la moderación en hasta 72 horas), sin necesidad de explicar.
 
 Si prefieren no hacer nada, también está bien. Y si este no es el canal adecuado, siéntanse libres de reenviarlo.
 

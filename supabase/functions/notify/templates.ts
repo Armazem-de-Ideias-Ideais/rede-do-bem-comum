@@ -1,7 +1,7 @@
 // Modelos de e-mail PT/EN da Rede do Bem Comum (texto simples + HTML mínimo).
 // Conteúdo vindo de usuários é sempre escapado no HTML. Nenhum segredo aqui.
 
-export type Locale = "pt" | "en";
+export type Locale = "pt" | "en" | "es";
 
 export interface NotificationContext {
   id: number;
@@ -34,6 +34,8 @@ function entityLink(site: string, slug: string | null | undefined): string {
 function wrap(locale: Locale, paragraphs: string[], footerLink: string): { text: string; html: string } {
   const footer = locale === "en"
     ? "Rede do Bem Comum — a map of initiatives for the common good. This is an automatic message."
+    : locale === "es"
+    ? "Rede do Bem Comum — mapa de iniciativas por el bien común. Este es un mensaje automático."
     : "Rede do Bem Comum — mapa de iniciativas pelo bem comum. Esta é uma mensagem automática.";
   const text = [...paragraphs, "", footerLink, "", "—", footer].join("\n");
   const html = `<!doctype html><html lang="${locale}"><body style="font-family:system-ui,sans-serif;line-height:1.5;max-width:560px">` +
@@ -48,7 +50,8 @@ const RELATION_PT: Record<string, string> = {
 };
 
 export function render(ctx: NotificationContext, site: string): RenderedEmail {
-  const locale: Locale = ctx.locale === "en" ? "en" : "pt";
+  // espanhol só existe no modelo takedown_confirm (Fase 2 traz o resto); os demais tipos caem para o português
+  const locale: Locale = ctx.locale === "en" ? "en" : ctx.locale === "es" && ctx.kind === "takedown_confirm" ? "es" : "pt";
   const en = locale === "en";
   const d = ctx.data ?? {};
   const name = str(ctx.entity?.name);
@@ -115,15 +118,56 @@ export function render(ctx: NotificationContext, site: string): RenderedEmail {
       return { subject, ...wrap("pt", body, panel) };
     }
     case "takedown_request": {
+      // Desde a 0012 a ficha só é ocultada depois que quem pediu confirma pelo link enviado ao e-mail.
       const hidden = d.auto_hidden === true;
-      const subject = `[Moderação] Pedido de retirada${hidden ? " (já oculta)" : ""}: ${name}`;
+      const subject = hidden
+        ? `[Moderação] Retirada confirmada por e-mail (ficha oculta): ${name}`
+        : `[Moderação] Pedido de retirada na fila (ficha no ar): ${name}`;
       const body = [
         `Ficha: ${name} (${link})`,
-        hidden ? "A ficha foi ocultada preventivamente em todas as superfícies." : "ATENÇÃO: a ficha NÃO foi ocultada automaticamente (disjuntor de volume). Avalie já.",
+        hidden
+          ? "Quem pediu confirmou pelo link enviado ao seu e-mail e a ficha foi ocultada preventivamente em todas as superfícies."
+          : "A ficha continua NO AR. Responda ao pedido em até 72 horas: confirme (tombstone) ou mantenha com justificativa.",
+        d.has_email === true
+          ? `E-mail informado: ${d.email_domain_matches === true ? "o domínio coincide com o do site da ficha" : "o domínio NÃO coincide com o do site da ficha"} (o endereço está no painel).`
+          : "Sem e-mail informado.",
         `Relação de quem pediu: ${RELATION_PT[str(d.relation)] ?? str(d.relation)}`,
         `Motivo:\n${str(d.reason)}`,
         d.contact ? `Contato informado: ${str(d.contact)}` : "Sem contato informado.",
-        "Confirme (tombstone) ou restaure com justificativa no painel:",
+        hidden ? "Confirme (tombstone) ou restaure com justificativa no painel:" : "Decida no painel:",
+      ];
+      return { subject, ...wrap("pt", body, panel) };
+    }
+    case "takedown_confirm": {
+      // O token nunca é registrado em log; o link usa a rota do front (#confirmar-retirada-<token> / #confirm-withdrawal-<token>).
+      const token = str(d.token);
+      if (!/^[0-9a-f]{64}$/.test(token)) throw new Error("takedown_confirm_sem_token");
+      const confirm = `${site}/#${locale === "en" ? "confirm-withdrawal" : "confirmar-retirada"}-${token}`;
+      const subject = locale === "en"
+        ? "Confirm the withdrawal of a listing from Rede do Bem Comum"
+        : locale === "es"
+        ? "Confirma la retirada de una ficha de la Rede do Bem Comum"
+        : "Confirme a retirada de uma ficha da Rede do Bem Comum";
+      const body = locale === "en"
+        ? [`Someone (hopefully you) asked to withdraw the listing "${name}" from the Rede do Bem Comum map using this address.`,
+           "To withdraw it, open the link below. It works once and is valid for 24 hours. The listing leaves the map as soon as you confirm.",
+           "If it was not you, ignore this message: nothing changes without the link."]
+        : locale === "es"
+        ? [`Alguien (esperamos que tú) pidió retirar la ficha "${name}" del mapa de la Rede do Bem Comum usando esta dirección.`,
+           "Para retirarla, abre el enlace de abajo. Funciona una sola vez y vale por 24 horas. La ficha sale del mapa en cuanto confirmes.",
+           "Si no fuiste tú, ignora este mensaje: nada cambia sin el enlace."]
+        : [`Alguém (esperamos que você) pediu para retirar a ficha "${name}" do mapa da Rede do Bem Comum usando este endereço.`,
+           "Para retirar, abra o link abaixo. Ele funciona uma vez só e vale por 24 horas. A ficha sai do mapa assim que você confirmar.",
+           "Se não foi você, ignore esta mensagem: nada muda sem o link."];
+      return { subject, ...wrap(locale, body, confirm) };
+    }
+    case "takedown_containment": {
+      const subject = "[Moderação] ALERTA: retiradas automáticas contidas pelo disjuntor";
+      const body = [
+        "O disjuntor da retirada por e-mail barrou pedidos: as fichas continuam no ar e os pedidos estão na fila.",
+        `Ocultações automáticas: ${str(d.hidden_last_hour)} na última hora (limite ${str(d.limit_per_hour)}) e ${str(d.hidden_last_24h)} nas últimas 24 h (limite ${str(d.limit_per_day)}).`,
+        `Pedidos contidos nas últimas 24 h: ${str(d.contained_last_24h)}.`,
+        "Este é o único alerta desta janela de 24 h. Veja a visão por IP e por e-mail (só hashes e domínios) e, se for abuso, desfaça em lote:",
       ];
       return { subject, ...wrap("pt", body, panel) };
     }

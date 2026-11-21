@@ -7,7 +7,7 @@
 
   function navItem(id, label, cur) { return '<li><a href="' + RBC.href(id) + '"' + (cur ? ' aria-current="page"' : '') + '>' + esc(label) + '</a></li>'; }
   var NAV_GROUP = { explore: 'explore', profile: 'explore', participate: 'participate', claim: 'participate', suggest: 'participate', offers: 'participate', connect: 'participate',
-    about: 'about', charter: 'about', why: 'about', attribution: 'about', privacy: 'about', terms: 'about', contact: 'about', correct: 'about', withdraw: 'about',
+    about: 'about', charter: 'about', why: 'about', attribution: 'about', privacy: 'about', terms: 'about', contact: 'about', correct: 'about', withdraw: 'about', confirmWithdraw: 'about',
     login: 'space', mySpace: 'space', edit: 'space', moderation: 'space' };
 
   function renderChrome(routeId) {

@@ -40,7 +40,7 @@ Opcional e recomendado: **Database → Extensions** → desative `pg_graphql` se
 
 ## 3. Aplicar as migrações
 
-As migrações estão em `supabase/migrations/` (0001–0007 do Marco B, 0008–0011 do Marco C), sempre nesta ordem. As reversões ficam em `supabase/migrations_down/` (não são aplicadas no deploy).
+As migrações estão em `supabase/migrations/` (0001–0007 do Marco B, 0008–0011 do Marco C, 0012 retirada com proteção contra abuso), sempre nesta ordem. As reversões ficam em `supabase/migrations_down/` (não são aplicadas no deploy).
 
 **Opção A — psql (recomendada):**
 ```bash
@@ -172,13 +172,13 @@ curl -s "https://<PROJECT_REF>.supabase.co/rest/v1/invite_candidates" -H "apikey
 ```
 Depois:
 1. Envie o formulário de contato pelo site → o moderador recebe o e-mail; em `app.notification_outbox` a linha fica com `sent_at`.
-2. Faça um pedido de retirada de teste numa ficha, confira que ela some da lista, e **restaure** pelo painel com justificativa.
+2. Faça um pedido de retirada de teste numa ficha, **com e-mail**: a ficha deve continuar no ar até você clicar no link recebido; depois de clicar, ela some da lista. **Restaure** pelo painel com justificativa. (Um pedido sem e-mail só entra na fila e não oculta nada.) Os limites ficam em `app.settings` (`takedown_autohide_per_hour` 15, `takedown_autohide_per_day` 50, `takedown_autohide_per_email_day` 3, `takedown_confirm_per_email_day` 3, `takedown_confirm_emails_per_day` 40, `takedown_mod_emails_per_day` 20); ajuste com `update app.settings set value = '<n>' where key = '<chave>';`. A cota gratuita da Resend (100 e-mails/dia) também serve ao link de login: não suba `takedown_confirm_emails_per_day` sem checar.
 3. Confirme que o hash de IP está chegando (antispam): `select count(*), count(ip_hash) from app.takedown_requests;` (os dois números devem ser iguais). Se `ip_hash` vier nulo, o cabeçalho de IP não está chegando ao banco e os limites caem num balde comum.
 4. Rode **Advisors → Security** no painel e confira que não há views *security definer* nem tabelas expostas sem RLS.
 
 ## 11. Reverter
 
-Faça backup antes (Database → Backups, ou `pg_dump`). Para desfazer só o Marco C, aplique `migrations_down/0011…0008` em ordem decrescente; para tudo, `0011…0001`. Os arquivos `down` apagam dados das estruturas que removem. Após restaurar um backup, rode `select app.reapply_suppressions();` **antes** de reabrir o tráfego.
+Faça backup antes (Database → Backups, ou `pg_dump`). Para desfazer só o Marco C, aplique `migrations_down/0012…0008` em ordem decrescente; para tudo, `0012…0001`. (Só a 0012: `migrations_down/0012_retirada_antiabuso.down.sql` volta à retirada com ocultação imediata, o comportamento anterior; descarta os pedidos ainda sem confirmação.) Os arquivos `down` apagam dados das estruturas que removem. Após restaurar um backup, rode `select app.reapply_suppressions();` **antes** de reabrir o tráfego.
 
 ## 12. Checklist de segredos
 

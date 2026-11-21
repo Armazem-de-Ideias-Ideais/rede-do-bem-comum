@@ -44,7 +44,7 @@ Essa frase aparece nas fichas que tiveram essa origem e, de forma geral, nesta p
 
 ## Corrigir ou retirar
 
-Cada ficha tem os botões **"Corrigir"** e **"Retirar do mapa"**. A retirada oculta a ficha na hora, sem login.
+Cada ficha tem os botões **"Corrigir"** e **"Retirar do mapa"**. A retirada é sem login: a ficha sai do ar assim que você confirmar pelo e-mail (ou, sem e-mail, após análise da moderação em até 72 horas).
 
 ---
 
@@ -92,4 +92,4 @@ This notice appears on listings that originated there and, generally, on this pa
 
 ## Correct or withdraw
 
-Every listing has **"Correct"** and **"Remove from the map"** buttons. Withdrawal hides the listing at once, no login needed.
+Every listing has **"Correct"** and **"Remove from the map"** buttons. Withdrawal needs no login: the listing comes down as soon as you confirm by email (or, without an email, after moderators review it within 72 hours).

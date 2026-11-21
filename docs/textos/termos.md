@@ -92,7 +92,7 @@ Não é permitido:
 
 ## 9. Retirada e exclusão
 
-Qualquer pessoa pode pedir a retirada de uma ficha pelo botão **"Retirar do mapa"**, sem login. A ficha é ocultada imediatamente, de forma preventiva. Detalhes e limites (cópias de terceiros, backups) estão no [Aviso de privacidade](privacidade.md). Você pode encerrar sua conta a qualquer momento.
+Qualquer pessoa pode pedir a retirada de uma ficha pelo botão **"Retirar do mapa"**, sem login. Com e-mail, a ficha é ocultada de forma preventiva assim que quem pediu confirma pelo link enviado ao endereço; sem e-mail, o pedido vai para a fila da moderação, que responde em até 72 horas, e a ficha continua no ar até a análise. O pedido, sozinho, não oculta nada: isso protege as iniciativas contra retiradas em massa feitas por terceiros. Detalhes e limites (cópias de terceiros, backups) estão no [Aviso de privacidade](privacidade.md). Você pode encerrar sua conta a qualquer momento.
 
 ## 10. Responsabilidade
 
@@ -192,7 +192,7 @@ Not allowed:
 
 ## 9. Withdrawal and deletion
 
-Anyone may request withdrawal of a listing with the **"Remove from the map"** button, no login needed. The listing is hidden immediately, as a precaution. Details and limits (third-party copies, backups) are in the [Privacy notice](privacidade.md). You may close your account at any time.
+Anyone may request withdrawal of a listing with the **"Remove from the map"** button, no login needed. With an email, the listing is hidden as a precaution as soon as the person asking confirms through the link sent to that address; without an email, the request goes to the moderation queue, which replies within 72 hours, and the listing stays up until it is reviewed. The request alone hides nothing: this protects initiatives from mass withdrawals made by third parties. Details and limits (third-party copies, backups) are in the [Privacy notice](privacidade.md). You may close your account at any time.
 
 ## 10. Liability
 

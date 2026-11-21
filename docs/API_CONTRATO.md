@@ -1,7 +1,7 @@
 # Rede do Bem Comum: contrato da API (Fase 1, Marco C)
 
-Versão 1.0 · 21/11/2026 · fonte da verdade para o front (`web/`) e para o backend (`supabase/`).
-Regra de evolução: depois de publicado, este contrato **só cresce** (novos campos, funções ou valores). Toda mudança vai para o registro no fim do arquivo.
+Versão 1.2 · 21/11/2026 · fonte da verdade para o front (`web/`) e para o backend (`supabase/`).
+Regra de evolução: depois de publicado, este contrato **só cresce** (novos campos, funções ou valores). Toda mudança vai para o registro no fim do arquivo. (Exceção declarada na 1.2: o valor de `hidden` em `request_takedown`, ver o registro; o contrato ainda não tinha sido publicado.)
 
 ## 1. Como conectar
 
@@ -157,14 +157,29 @@ Todas têm antispam: limite por **hash do IP** (sal diário no servidor, IP nunc
 
 ### 3.1 `request_takedown` — "Retirar do mapa"
 
-`request_takedown(p_entity uuid, p_reason text, p_relation text, p_contact text default null, p_locale text default 'pt', p_hp text default null)` → `{ "request_id": uuid, "hidden": boolean }`
+`request_takedown(p_entity uuid, p_reason text, p_relation text, p_contact text default null, p_locale text default 'pt', p_hp text default null, p_email text default null)` → `{ "request_id": uuid, "hidden": false, "needs_confirmation": boolean, "queued": boolean }`
 
-- `p_reason`: 10–2000 caracteres. `p_relation`: `representative | member | mentioned | other`. `p_contact`: opcional (≤ 200), privado, só o moderador vê.
-- **Efeito imediato (retirada preventiva):** a ficha sai de todas as superfícies públicas na mesma transação (`hidden: true`). O pedido entra na fila do moderador e ele recebe e-mail.
-- **Disjuntor:** se houver mais de 30 ocultações preventivas automáticas na última hora (configurável), o pedido é registrado e o moderador avisado, mas a ficha não é ocultada automaticamente (`hidden: false`). O front deve dizer: "Recebemos o pedido; a moderação vai analisar em breve."
-- Ficha inexistente ou já fora do ar → mesma forma de resposta, `hidden: false`.
-- Limites: 5 por hora e 20 por dia por IP; 20 por dia por conta.
-- Depois, o moderador **confirma** (vira retirada definitiva com tombstone, que impede reimportação) ou **restaura** com justificativa (§6).
+A retirada continua **sem login**, mas **o pedido nunca oculta a ficha**. Ela só sai do ar depois que quem pediu confirma por um link enviado ao e-mail (§3.1.1). Sem e-mail, o pedido vai para a fila da moderação (resposta em até 72 h) e a ficha fica no ar.
+
+- `p_reason`: 10–2000 caracteres. `p_relation`: `representative | member | mentioned | other`. `p_contact`: opcional (≤ 200), privado, só o moderador vê. `p_email`: opcional, formato simples, até 200 caracteres (inválido → `22023`); vazio ou só espaços vale como ausente.
+- **Com e-mail válido:** o servidor cria um token aleatório de 32 bytes (guarda só o sha256), com validade de 24 h e uso único, e enfileira o e-mail `takedown_confirm` (no idioma `p_locale`). Resposta: `{ request_id, hidden: false, needs_confirmation: true, queued: false }`. O front diz: "Enviamos um link para o seu e-mail. A ficha continua no ar até você confirmar."
+- **Sem e-mail:** o pedido entra na fila. Resposta: `{ request_id, hidden: false, needs_confirmation: false, queued: true }`. O front diz: "Pedido na fila da moderação. A ficha continua no ar; a resposta vem em até 72 horas."
+- **Limite de e-mails de confirmação:** 3 por e-mail por 24 h e um teto global por 24 h (`takedown_confirm_emails_per_day`, padrão 40, para preservar a cota gratuita da Resend, que também serve ao link de login). Acima do limite, o pedido é registrado na fila **sem e-mail** e a resposta é `queued: true`.
+- **A resposta não revela se a ficha existe ou está publicada:** ficha inexistente, já oculta ou publicada recebem o mesmo formato (para ficha inexistente ou fora do ar não se envia e-mail nem se cria token).
+- O e-mail fica só em `app.takedown_requests` (tabela privada, sem acesso de `anon`/`authenticated`) e em `email_hash` (hash com sal, na mesma tabela) para limites e filtros; `email_domain_matches` registra se o domínio do e-mail coincide com o do site da ficha (orienta a moderação; não muda o fluxo). Pedido não confirmado em 24 h expira e o e-mail em claro é apagado (`purge_expired`).
+- Limites por IP: 5 por hora e 20 por dia; 20 por dia por conta. Estourou → `54000` (o front mostra a tela "Limite de pedidos atingido").
+- Moderação: um e-mail por ocultação confirmada e por pedido sem e-mail (`takedown_request`), com teto de 20 por 24 h; acima disso o painel mostra tudo e o alerta de contenção (§3.1.1) cobre o aviso.
+- Depois, o moderador **confirma** (retirada definitiva com tombstone, que impede reimportação) ou **restaura** com justificativa (§6).
+
+#### 3.1.1 `confirm_takedown` — link do e-mail
+
+`confirm_takedown(p_token text)` → `{ "hidden": boolean, "queued": boolean }` (anon e authenticated)
+
+- O front abre a rota `#confirmar-retirada-<token>` (PT) ou `#confirm-withdrawal-<token>` (EN), que chama esta função. O token tem 64 caracteres hexadecimais; o link do e-mail usa `${SITE_URL}/#confirmar-retirada-<token>` (idioma pt/es) ou `${SITE_URL}/#confirm-withdrawal-<token>` (en).
+- Token inexistente, já usado, vencido ou malformado → **o mesmo erro genérico** `P0002` ("link inválido ou vencido"). O front mostra "Link inválido ou vencido" sem dizer o motivo.
+- Marca o token como usado e então oculta a ficha (`hidden: true`, `queued: false`; some de lista, mapa, busca, contadores e exportação) **se o disjuntor permitir**: no máximo 3 ocultações por e-mail (hash) em 24 h (`takedown_autohide_per_email_day`), `takedown_autohide_per_hour` (padrão 15) e `takedown_autohide_per_day` (padrão 50) no total.
+- Acima do disjuntor: a ficha continua no ar, o pedido fica na fila com `contained = true` e a resposta é `{ hidden: false, queued: true }`. A moderação recebe **um único alerta** (`takedown_containment`) por janela de 24 h, não um por pedido. Também vai para a fila (`queued: true`) o pedido cuja ficha já não está no ar.
+- Limite por IP: 30 por hora e 100 por dia (`54000`).
 
 ### 3.2 `report` — "Corrigir" e denúncias
 
@@ -274,6 +289,8 @@ Exige papel `moderator` (concedido no banco; ver `README_DEPLOY.md`). Para os de
 
 - `mod_queue_counts()` → `{ takedowns, claims, reports, suggestions, contact, edits, invites_pending }` (itens abertos).
 - `mod_list(p_queue text, p_status text default null, p_limit integer default 50, p_offset integer default 0)` → jsonb (array). `p_queue`: `takedowns | claims | reports | suggestions | contact | edits | invite_candidates | invitations`. Sem `p_status`, devolve os abertos. Teto 200.
+- `mod_restore_auto_hidden(p_since timestamptz, p_until timestamptz, p_ip_hash text default null, p_email_hash text default null, p_rationale text default null)` → integer (**desfazer em lote**). Restaura todas as fichas ocultadas automaticamente na janela (`hidden_at` entre `p_since` e `p_until`, inclusive) e, se informados, só as do `ip_hash` e/ou `email_hash` dados, que ainda estejam ocultas de forma reversível (não arquivadas nem com tombstone) e com pedido `open`. Marca esses pedidos como `restored`, grava uma linha de auditoria por ficha (`entity.restored_batch`) e uma do lote (`takedown.batch_restored`) e devolve quantas fichas foram restauradas. `p_rationale` com 10+ caracteres (`22023` se faltar); janela inválida → `22023`.
+- `mod_takedown_overview(p_hours integer default 48)` → jsonb para o painel: `{ window_hours, breaker { hidden_last_hour, limit_per_hour, hidden_last_24h, limit_per_day, limit_per_email_day, tripped, contained_last_24h, last_containment_alert_at, confirm_emails_last_24h, confirm_emails_limit_per_day }, by_ip [ { ip_hash, requests, hidden, contained, awaiting, first_at, last_at } ], by_email [ { email_hash, email_domain, requests, hidden, contained, awaiting, domain_matches, first_at, last_at } ] }`. Nenhum e-mail em claro: só o domínio e o hash (use os hashes como filtro do lote). Teto de 50 linhas por grupo; `p_hours` de 1 a 720.
 - `mod_decide_takedown(p_request uuid, p_decision text, p_rationale text)` → void. `confirm`: retirada definitiva com tombstone (bloqueia reimportação). `restore`: republica e exige `p_rationale` ≥ 10. `reject_keep_hidden`: encerra o pedido e mantém oculta.
 - `mod_decide_claim(p_claim uuid, p_approve boolean, p_rationale text)` → void (≥ 10 caracteres). Serve para (b) e (c).
 - `triage_report(p_report uuid, p_status text, p_note text)` (Marco B): `triaged | actioned | closed`.
@@ -289,7 +306,7 @@ Campos devolvidos por `mod_list` (cada item é um objeto):
 
 | Fila | Campos |
 |---|---|
-| `takedowns` | `id, entity_id, entity_name, entity_slug, entity_state, reason, relation, contact, locale, auto_hidden, status, created_at, decided_at, rationale` (status: `open, confirmed, restored, closed_kept_hidden`) |
+| `takedowns` | `id, entity_id, entity_name, entity_slug, entity_state, reason, relation, contact, locale, auto_hidden, contained, status, created_at, decided_at, rationale, email, email_domain, email_domain_matches, email_hash, ip_hash, confirmed_at, hidden_at` (status: `awaiting_confirmation, open, confirmed, restored, closed_kept_hidden, expired`; sem `p_status`, só `open`; `awaiting_confirmation` não entra na fila nem no contador) |
 | `claims` | `id, entity_id, entity_name, entity_slug, website_url, method, status, claim_statement, verify_domain, published_code, evidence_url, claimant_email, created_at, decided_at, rationale` (sem `p_status`: `pending` + `awaiting_evidence`) |
 | `reports` | `id, kind, entity_id, entity_name, entity_slug, body, reporter_contact, priority, status, created_at, referral_note` |
 | `suggestions` | `id, name, website, country_code, city, families, description, why, contact, locale, status, note, created_at` |
@@ -317,7 +334,9 @@ O front **não envia e-mail** e nunca vê o endereço do moderador. Funções do
 | `claim_code` | `p_email` informado em (a) | `claim_start`, `claim_resend_code` |
 | `claim_pending` | moderador | (b) com evidência, (c) |
 | `claim_approved` / `claim_rejected` | conta reivindicante | decisão ou verificação |
-| `takedown_request` | moderador | `request_takedown` |
+| `takedown_confirm` | `p_email` do pedido (idioma do pedido: pt, en ou es) | `request_takedown` com e-mail válido dentro dos limites; o token vai por `notification_secrets` (apagado quando o envio conclui) e nunca é registrado em log |
+| `takedown_request` | moderador | `confirm_takedown` que ocultou a ficha, ou `request_takedown` sem e-mail (ou acima do limite de e-mails); teto de 20 por 24 h |
+| `takedown_containment` | moderador | primeiro pedido barrado pelo disjuntor em cada janela de 24 h (um único alerta) |
 | `contact_message` | moderador (responder para o remetente) | `send_contact_message` |
 | `invite_accepted` | moderador | `invite_accept` |
 
@@ -329,3 +348,4 @@ Não use no front. A Edge Function chama: `notification_pending(p_limit)`, `noti
 
 - 1.0 (21/11/2026): versão inicial.
 - 1.1 (21/11/2026, só acréscimos, implementado e testado): campos de cada fila de `mod_list` (§6); `my_account().managed[]` ganha `publication_state`; regra de slug tenta antes um dos outros nomes (`alt_names`) com letras latinas, e só depois `<país>-<8 hex>`; `invite_preview` e `invite_decline` têm limite por IP (30/h); `purge_expired()` disponível para `service_role`.
+- 1.2 (21/11/2026, retirada com proteção contra abuso, migração `0012`): `request_takedown` ganha `p_email` e **nunca oculta** (a resposta passa a `{ request_id, hidden: false, needs_confirmation, queued }`; `hidden` agora é sempre `false`: é a única mudança de significado, aprovada pelo gestor antes da publicação); novas `confirm_takedown(p_token)` (anon/authenticated), `mod_restore_auto_hidden(...)` e `mod_takedown_overview(p_hours)` (moderador); `mod_list('takedowns')` ganha `contained, email, email_domain, email_domain_matches, email_hash, ip_hash, confirmed_at, hidden_at` e os estados `awaiting_confirmation` e `expired`; e-mails `takedown_confirm` e `takedown_containment`; configurações `takedown_autohide_per_hour` (15), `takedown_autohide_per_day` (50), `takedown_autohide_per_email_day` (3), `takedown_confirm_per_email_day` (3), `takedown_confirm_emails_per_day` (40), `takedown_mod_emails_per_day` (20); `purge_expired()` também expira pedidos não confirmados e apaga o e-mail em claro (`takedowns_expired`). Rota do front: `#confirmar-retirada-<token>` / `#confirm-withdrawal-<token>`.

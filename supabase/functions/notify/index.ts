@@ -10,6 +10,8 @@
 //   SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY são fornecidas pelo próprio Supabase.
 //
 // Privacidade: os logs registram só id e tipo da notificação — nunca endereços, códigos ou mensagens.
+// Retirada por e-mail (0012): o token de confirmação chega só pelo contexto de notification_claim (vem de
+// app.notification_secrets, que o banco apaga quando o envio é concluído), nunca pelo webhook, e nunca é registrado em log.
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { type NotificationContext, render } from "./templates.ts";
