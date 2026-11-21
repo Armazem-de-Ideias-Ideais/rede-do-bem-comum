@@ -33,7 +33,8 @@ function check(name, ok, detail) { R.checks.push({ name, ok: !!ok, detail: detai
   R.privateNameCoincidences = nameLeak;
   const hold = new Set(TRIAGE.filter(x => x.decisao === 'segurar').map(x => x.id));
   check('public.json: nenhum registro "segurar" da triagem (' + hold.size + ')', ITEMS.every(x => !hold.has(x.id)));
-  check('public.json: 1.717 − ' + hold.size + ' = ' + ITEMS.length + ' registros', ITEMS.length === 1717 - hold.size, ITEMS.length);
+  const CLOSED = ['RBC-C0105', 'RBC-C0403'];  // indício de encerramento: mesma regra do seed (build_seed.py)
+  check('public.json: 1.717 − ' + hold.size + ' (segurar) − ' + CLOSED.length + ' (encerramento) = ' + ITEMS.length + ' registros', ITEMS.length === 1717 - hold.size - CLOSED.length && !ITEMS.some(x => CLOSED.includes(x.id)), ITEMS.length);
   check('public.json: coordenadas só com precisão "city"', ITEMS.every(x => (x.location_precision === 'city') === (x.city_lat != null && x.city_lng != null)));
   check('public.json: summary_en_status = "machine" sempre que há resumo EN', ITEMS.every(x => x.summary_en ? x.summary_en_status === 'machine' : x.summary_en_status === null));
   check('public.json: slugs únicos no formato da API', new Set(ITEMS.map(x => x.slug)).size === ITEMS.length && ITEMS.every(x => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(x.slug) && x.slug.length <= 80));

@@ -5,6 +5,9 @@ Entradas (rbc-app/data):
   publicavel_v1.json      registros aprovados para publicação (1.717)
   traducoes_en.json       {id: resumo_en}  (opcional; id ausente => summary_en = null)
   triagem_resultado.json  decisões da triagem de aderência; "segurar" fica FORA
+  slugs_servidor.csv      (opcional) research_id,slug exportados do banco; quando existe, é a fonte
+                          da verdade dos slugs (o unaccent do Postgres e o fallback por UUID não
+                          são reproduzíveis com fidelidade em Python)
 
 Saídas:
   web/data/public.json    somente campos públicos (lista branca abaixo)
@@ -63,7 +66,9 @@ def unique_slug(name, aliases, country, rid, taken):
     if len(base) < 3:
         base = next((slugify(a) for a in (aliases or []) if len(slugify(a)) >= 3), None)
     if not base:
-        return (cc or 'xx') + '-' + hashlib.md5(rid.encode()).hexdigest()[:8]
+        import uuid  # mesmo uuid5 do gerador do banco (build_seed.py, NAMESPACE fixo)
+        eid = uuid.uuid5(uuid.UUID("6f1d3c2a-8b4e-5d7f-9a0b-1c2d3e4f5a6b"), rid)
+        return (cc or 'xx') + '-' + eid.hex[:8]
     cand = base
     if cand in taken and cc:
         cand = base + '-' + cc
@@ -101,13 +106,27 @@ def build_public():
     private = load('convite_alta_exposicao_PRIVADO.json', default=[])
     private_ids = {x['id'] for x in private}
 
-    out, seen_slugs, skipped = [], set(), {'segurar': 0, 'privado': 0}
+    # Mesma regra do gerador do banco (supabase/seed/build_seed.py): indício de encerramento fica fora.
+    import importlib.util, pathlib
+    _sp = importlib.util.spec_from_file_location('build_seed', pathlib.Path(__file__).resolve().parent.parent / 'supabase' / 'seed' / 'build_seed.py')
+    _bs = importlib.util.module_from_spec(_sp); _sp.loader.exec_module(_bs)
+    closure = re.compile('|'.join(_bs.CLOSURE_PATTERNS), re.I)
+
+    server_slugs = {}
+    _sp_csv = os.path.join(DATA, 'slugs_servidor.csv')
+    if os.path.exists(_sp_csv):
+        import csv
+        server_slugs = {a: b for a, b in csv.reader(open(_sp_csv, encoding='utf-8'))}
+
+    out, seen_slugs, skipped = [], set(), {'segurar': 0, 'privado': 0, 'encerramento': 0}
     for r in sorted(recs, key=lambda x: x['id']):
         if r['id'] in private_ids:
             skipped['privado'] += 1; continue
         if r['id'] in hold:
             skipped['segurar'] += 1; continue
-        slug = unique_slug(r['name'], r.get('aliases'), r.get('country'), r['id'], seen_slugs)
+        if closure.search(r.get('research_notes') or ''):
+            skipped['encerramento'] += 1; continue
+        slug = server_slugs.get(r['id']) or unique_slug(r['name'], r.get('aliases'), r.get('country'), r['id'], seen_slugs)
         assert re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', slug) and len(slug) <= 80 and slug not in seen_slugs, slug
         seen_slugs.add(slug)
         city_ok = r.get('location_precision') == 'city' and r.get('city_lat') is not None and r.get('city_lng') is not None
