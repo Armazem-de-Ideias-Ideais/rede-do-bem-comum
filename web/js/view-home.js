@@ -4,7 +4,9 @@
   var RBC = window.RBC, t = RBC.t, esc = RBC.esc, icon = RBC.icon, ui = RBC.ui;
 
   function art(name, alt) {
-    return '<picture><img src="assets/ilustracao-' + name + '-900.webp" srcset="assets/ilustracao-' + name + '-900.webp 900w, assets/ilustracao-' + name + '.webp 1600w" sizes="(min-width: 900px) 45vw, 100vw" width="900" height="600" alt="' + esc(alt) + '" loading="lazy" decoding="async"></picture>';
+    /* As ilustrações são faixas 3:1 com papel em branco à esquerda (feitas para cabeçalho).
+       Mostramos a parte ilustrada, sem distorcer: proporção 9:4, recorte pela direita. */
+    return '<picture><img class="art art--banner" src="assets/ilustracao-' + name + '-900.webp" srcset="assets/ilustracao-' + name + '-900.webp 900w, assets/ilustracao-' + name + '.webp 1600w" sizes="(min-width: 960px) 52vw, 100vw" width="900" height="400" alt="' + esc(alt) + '" loading="lazy" decoding="async"></picture>';
   }
   function action(href, ic, title, text, attrs) {
     return '<li><a class="action" href="' + href + '"' + (attrs || '') + '><span class="blob blob--' + (title.length % 4) + '" aria-hidden="true">' + icon(ic) + '</span><span class="action__t">' + esc(title) + '</span><span class="action__d">' + esc(text) + '</span><span class="action__go" aria-hidden="true">' + icon('arrow-right') + '</span></a></li>';

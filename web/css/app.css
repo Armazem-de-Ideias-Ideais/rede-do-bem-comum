@@ -266,6 +266,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px
 .hero { display: grid; gap: 18px; align-items: center; margin: 4px 0 30px; }
 .hero h1 { position: relative; font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3.8rem); padding-bottom: 16px; margin: 6px 0 18px; max-width: 13em; }
 .hero__art { margin: 0; }
+.art--banner { aspect-ratio: 9 / 4; height: auto; object-fit: cover; object-position: right center; }
 .art { display: block; width: 100%; height: auto; mix-blend-mode: multiply; border-radius: 6px; }
 @media (min-width: 960px) { .hero { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 36px; } }
 .homesearch { margin-top: 18px; max-width: 560px; }
