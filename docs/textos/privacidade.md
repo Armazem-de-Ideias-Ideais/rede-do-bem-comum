@@ -1,6 +1,6 @@
 # Aviso de privacidade / Privacy notice
 
-> **MINUTA PARA REVISÃO JURÍDICA. Não publicar como texto final.** Os trechos entre [colchetes] dependem de decisão ou confirmação (prazos de retenção, regiões dos servidores, mecanismos de transferência internacional). / **DRAFT FOR LEGAL REVIEW. Do not publish as final.** Items in [brackets] still need a decision or confirmation (retention periods, server regions, international transfer mechanisms).
+> **Versão provisória de 22/11/2026, em revisão jurídica.** Pode mudar depois da revisão; mudanças relevantes serão publicadas aqui, com data. / **Provisional version of 22 November 2026, under legal review.** It may change after review; significant changes will be published here, dated.
 
 Versão: minuta 1 · Data: 21/11/2026
 
@@ -23,7 +23,7 @@ Os responsáveis (controladores) pelos dados tratados na Rede do Bem Comum são,
 - The Brains & Love Cooperation;
 - Coolmeia — Ideias em Cooperação.
 
-**Como falar conosco:** pelo formulário de contato do site. Ele chega à moderação da Rede. Por ele você pode exercer qualquer dos direitos descritos abaixo. [Encarregado/DPO e representante na União Europeia: avaliar se são exigíveis.]
+**Como falar conosco:** pelo formulário de contato do site. Ele chega à moderação da Rede. Por ele você pode exercer qualquer dos direitos descritos abaixo. Por enquanto, este formulário é o canal para todos os assuntos de dados pessoais; ele chega a quem responde pelo tratamento.
 
 ## 2. Que dados tratamos e por quê
 
@@ -74,7 +74,7 @@ Algumas escolhas só acontecem com **consentimento próprio, separado, opcional 
 - Não publicamos perfis de menores de idade.
 - Não decidimos nada sobre você por meio automatizado com efeito jurídico. A tradução para o inglês é automática e vem marcada como tal.
 
-**Cookies e armazenamento local:** usamos apenas o estritamente necessário para manter sua sessão quando você entra com sua conta. [Confirmar a lista final antes da publicação.]
+**Cookies e armazenamento local:** não usamos cookies. O navegador guarda, no próprio aparelho, apenas a sua sessão quando você entra com sua conta e as suas preferências do site (como o idioma).
 
 ## 4. Quem trata dados em nosso nome (fornecedores)
 
@@ -84,7 +84,7 @@ Algumas escolhas só acontecem com **consentimento próprio, separado, opcional 
 | Supabase | Banco de dados e autenticação (link mágico) |
 | Resend | Envio dos e-mails do serviço (links de acesso, avisos de conexão, notificações) |
 
-Esses fornecedores podem tratar dados fora do Brasil e da União Europeia. Para essas transferências usamos os mecanismos previstos na LGPD (art. 33) e no GDPR (Cap. V), como cláusulas contratuais padrão. [Confirmar mecanismos e regiões de armazenamento de cada fornecedor.] Os servidores desses fornecedores podem registrar dados técnicos de acesso (como endereço IP) por tempo limitado, por segurança e funcionamento.
+Esses fornecedores podem tratar dados fora do Brasil e da União Europeia. Para essas transferências usamos os mecanismos previstos na LGPD (art. 33) e no GDPR (Cap. V), como cláusulas contratuais padrão. O banco de dados e o envio de e-mails ficam em São Paulo (Brasil); o site é servido pela rede global da Cloudflare. Os servidores desses fornecedores podem registrar dados técnicos de acesso (como endereço IP) por tempo limitado, por segurança e funcionamento.
 
 ## 5. Seus direitos
 
@@ -99,22 +99,20 @@ Na ficha de qualquer iniciativa há o botão **"Retirar do mapa"**. Não exige l
 3. A moderação analisa o pedido. Se confirma a retirada, guardamos um **registro mínimo** que impede a ficha de voltar numa futura importação. Se tiver havido engano ou abuso, a ficha só é restaurada com justificativa registrada.
 4. Antes de qualquer restauração de backup, reaplicamos as retiradas.
 
-**Limites que dizemos com franqueza:** não conseguimos apagar cópias que terceiros já tenham feito (outros sites, buscadores, arquivos da web), nem controlar o que eles mostram. Backups criptografados podem conter a ficha por um período até serem substituídos [prazo a definir]; nesse intervalo ela não é restaurada nem exibida.
+**Limites que dizemos com franqueza:** não conseguimos apagar cópias que terceiros já tenham feito (outros sites, buscadores, arquivos da web), nem controlar o que eles mostram. Backups criptografados podem conter a ficha por um período até serem substituídos (no máximo 30 dias); nesse intervalo ela não é restaurada nem exibida.
 
 ## 6. Por quanto tempo guardamos
-
-[Tabela a definir com a revisão jurídica. Não fixar prazos antes dela.]
 
 | Informação | Retenção |
 |---|---|
 | Fichas de iniciativas publicadas | Enquanto a ficha estiver ativa; some ao ser retirada |
-| Registro mínimo de retirada | [a definir] (necessário para impedir reimportação) |
+| Registro mínimo de retirada (nome, site e data, sem dados de quem pediu) | Enquanto a Rede existir: é o que impede a reimportação |
 | Conta e dados de gestão | Enquanto a conta existir; eliminados a pedido, salvo o que a lei exija guardar |
 | Ofertas e necessidades | Têm validade e expiram sozinhas |
-| Mensagens do formulário e relatos de moderação | [a definir] |
-| Registros de consentimento | [a definir] (prova do que foi autorizado e revogado) |
-| Registros técnicos de acesso | [a definir; considerar obrigações legais] |
-| Backups | [a definir] |
+| Mensagens do formulário, relatos de moderação, sugestões e pedidos de retirada (com o e-mail de quem pediu) | 12 meses depois de resolvidos; o e-mail de um pedido de retirada não confirmado é apagado em 1 dia |
+| Registros de consentimento | 5 anos depois da revogação (prova do que foi autorizado e revogado) |
+| Registros técnicos de acesso (o endereço IP só como código irreversível, para limites de uso) | 2 dias; os provedores guardam registros próprios por poucos dias |
+| Backups | Até 30 dias |
 
 ## 7. Segurança e incidentes
 
@@ -128,7 +126,7 @@ Quando mudarmos este aviso de forma relevante, publicaremos a nova versão aqui,
 
 # English
 
-> **DRAFT FOR LEGAL REVIEW. Do not publish as final.**
+> **Provisional version of 22 November 2026, under legal review.**
 
 ## In short
 
@@ -145,7 +143,7 @@ The controllers of the data processed on the Common Good Network are jointly:
 - The Brains & Love Cooperation;
 - Coolmeia — Ideias em Cooperação.
 
-**How to reach us:** through the contact form on the site. It goes to the Network's moderation. You can use it to exercise any of the rights below. [Data protection officer and EU representative: assess whether required.]
+**How to reach us:** through the contact form on the site. It goes to the Network's moderation. You can use it to exercise any of the rights below. For now, this form is the channel for all personal-data matters; it reaches the people responsible for processing.
 
 ## 2. What data we handle and why
 
@@ -196,7 +194,7 @@ Some choices happen only with **separate, optional, revocable consent**: for exa
 - We do not publish profiles of minors.
 - We make no solely automated decisions with legal effect on you. The English translation is automatic and labelled as such.
 
-**Cookies and local storage:** only what is strictly necessary to keep you signed in. [Confirm the final list before publication.]
+**Cookies and local storage:** we use no cookies. Your browser keeps, on your own device, only your session when you sign in and your site preferences (such as language).
 
 ## 4. Who processes data on our behalf (providers)
 
@@ -206,7 +204,7 @@ Some choices happen only with **separate, optional, revocable consent**: for exa
 | Supabase | Database and authentication (magic link) |
 | Resend | Sending service emails (sign-in links, connection notices, notifications) |
 
-These providers may process data outside Brazil and the European Union. For such transfers we rely on the mechanisms provided by the LGPD (art. 33) and the GDPR (Chapter V), such as standard contractual clauses. [Confirm mechanisms and storage regions for each provider.] Their servers may log technical access data (such as IP address) for a limited time, for security and operation.
+These providers may process data outside Brazil and the European Union. For such transfers we rely on the mechanisms provided by the LGPD (art. 33) and the GDPR (Chapter V), such as standard contractual clauses. The database and email sending are hosted in São Paulo (Brazil); the site is served through Cloudflare's global network. Their servers may log technical access data (such as IP address) for a limited time, for security and operation.
 
 ## 5. Your rights
 
@@ -221,22 +219,20 @@ Every initiative's page has a **"Remove from the map"** button. No login is need
 3. Moderation reviews the request. If the withdrawal is confirmed, we keep a **minimal record** that stops the listing from returning in a future import. If there was a mistake or abuse, the listing is restored only with a recorded justification.
 4. Before any backup restoration, we reapply withdrawals.
 
-**Limits, stated plainly:** we cannot erase copies that third parties have already made (other sites, search engines, web archives), nor control what they display. Encrypted backups may contain the listing until they are replaced [period to be defined]; during that time it is neither restored nor shown.
+**Limits, stated plainly:** we cannot erase copies that third parties have already made (other sites, search engines, web archives), nor control what they display. Encrypted backups may contain the listing until they are replaced (30 days at most); during that time it is neither restored nor shown.
 
 ## 6. How long we keep data
-
-[Table to be defined with legal review. Do not fix periods before then.]
 
 | Information | Retention |
 |---|---|
 | Published initiative listings | While the listing is active; gone once withdrawn |
-| Minimal withdrawal record | [to be defined] (needed to prevent re-import) |
+| Minimal withdrawal record (name, website and date, nothing about who asked) | While the Network exists: it is what prevents re-import |
 | Account and management data | While the account exists; deleted on request, except what the law requires us to keep |
 | Offers and needs | Have an expiry date and lapse on their own |
-| Form messages and moderation reports | [to be defined] |
-| Consent records | [to be defined] (proof of what was authorised and withdrawn) |
-| Technical access logs | [to be defined; consider legal obligations] |
-| Backups | [to be defined] |
+| Form messages, moderation reports, suggestions and withdrawal requests (with the requester's email) | 12 months after they are resolved; the email on an unconfirmed withdrawal request is deleted within 1 day |
+| Consent records | 5 years after withdrawal (proof of what was authorised and withdrawn) |
+| Technical access records (IP address only as an irreversible code, for usage limits) | 2 days; providers keep their own logs for a few days |
+| Backups | Up to 30 days |
 
 ## 7. Security and incidents
 

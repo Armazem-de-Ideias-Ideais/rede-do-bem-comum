@@ -1,6 +1,6 @@
 # Termos de uso / Terms of use
 
-> **MINUTA PARA REVISÃO JURÍDICA. Não publicar como texto final.** Itens entre [colchetes] pendem de decisão. / **DRAFT FOR LEGAL REVIEW. Do not publish as final.** Bracketed items are pending.
+> **Versão provisória de 22/11/2026, em revisão jurídica.** Pode mudar depois da revisão; mudanças relevantes serão publicadas aqui, com data. / **Provisional version of 22 November 2026, under legal review.** It may change after review; significant changes will be published here, dated.
 
 Versão: minuta 1 · Data: 21/11/2026
 
@@ -18,7 +18,7 @@ O serviço é oferecido como está, por um grupo pequeno e de boa-fé. Podemos e
 
 ## 2. Quem pode usar
 
-Qualquer pessoa pode navegar e buscar sem conta. Para gerir fichas, conectar-se e publicar ofertas e necessidades é preciso uma conta, por link mágico enviado ao seu e-mail. A conta é para maiores de 18 anos. [Confirmar com revisão jurídica.] Você é responsável por manter seu e-mail seguro.
+Qualquer pessoa pode navegar e buscar sem conta. Para gerir fichas, conectar-se e publicar ofertas e necessidades é preciso uma conta, por link mágico enviado ao seu e-mail. A conta é para maiores de 18 anos. Você é responsável por manter seu e-mail seguro.
 
 ## 3. Licenças: dados e código
 
@@ -30,7 +30,7 @@ Qualquer pessoa pode navegar e buscar sem conta. Para gerir fichas, conectar-se 
 
 Conteúdos de terceiros (por exemplo, textos de sites de iniciativas) mantêm as licenças de seus autores. Os resumos das fichas são originais da Rede em português; as versões em inglês são tradução automática, sem revisão, e marcadas como tal.
 
-A licença de dados não altera os direitos das pessoas e iniciativas: **a retirada de uma ficha vale também para quem reutiliza a base**. Quem republica dados da Rede deve respeitar a lei de proteção de dados aplicável e as retiradas que lhe forem comunicadas. [Revisar redação com apoio jurídico.]
+A licença de dados não altera os direitos das pessoas e iniciativas: **a retirada de uma ficha vale também para quem reutiliza a base**. Quem republica dados da Rede deve respeitar a lei de proteção de dados aplicável e as retiradas que lhe forem comunicadas.
 
 **Código: AGPL-3.0.** O código do site é livre, sob a GNU Affero General Public License 3.0, e está em repositório público. Se você o modificar e oferecer o resultado como serviço na internet, deve disponibilizar o código modificado sob a mesma licença. O repositório nunca contém segredos nem dados privados.
 
@@ -55,7 +55,7 @@ Regras:
 Uma iniciativa gerida pode pedir contato a outra.
 
 - A iniciativa que recebe decide se aceita. **Os contatos só aparecem aos dois lados depois do aceite.**
-- Se a iniciativa procurada ainda não tem gestor, o pedido fica guardado até que alguém reivindique a ficha. [Definir por quanto tempo.]
+- Se a iniciativa procurada ainda não tem gestor, o pedido fica guardado até que alguém reivindique a ficha. Ele vale por até 180 dias.
 - Há limite diário de pedidos, para evitar abuso. Não use conexões para spam, venda insistente, assédio ou captação de dados de pessoas.
 - Recusar não exige explicação e não tem consequência.
 
@@ -64,7 +64,7 @@ Uma iniciativa gerida pode pedir contato a outra.
 Iniciativas reivindicadas podem publicar ofertas e necessidades (ferramentas, espaço, voluntariado, saberes, materiais).
 
 - Cada item tem validade e **expira sozinho**; renove se ainda valer.
-- Descreva só o que você de fato pode oferecer ou precisa. Não publique endereços residenciais, dados pessoais de terceiros ou pedidos de dinheiro para fins individuais disfarçados. [Confirmar escopo com a coordenação.]
+- Descreva só o que você de fato pode oferecer ou precisa. Não publique endereços residenciais, dados pessoais de terceiros ou pedidos de dinheiro para fins individuais disfarçados.
 - Combinações que resultem das ofertas são entre as partes. Nós facilitamos o encontro e não somos parte, fiadores nem intermediários da troca.
 
 ## 7. Conduta
@@ -82,13 +82,13 @@ Não é permitido:
 
 ## 8. Denúncias, moderação e recurso
 
-**Quem modera.** No lançamento, a moderação é feita por Rafael Reinehr. A governança está em formação (veja a página Sobre); conforme os círculos se formarem, a moderação será compartilhada. [Revisar quando o círculo de convivência existir.]
+**Quem modera.** No lançamento, a moderação é feita por Rafael Reinehr. A governança está em formação (veja a página Sobre); conforme os círculos se formarem, a moderação será compartilhada.
 
 **Como denunciar.** Pelo formulário de contato do site. O relato é tratado em canal reservado.
 
 **O que fazemos.** Avaliamos o risco imediato e, se necessário, limitamos a exposição de uma ficha enquanto analisamos. Ouvimos as partes sem exigir confronto direto. Registramos fatos e decisão. As medidas são proporcionais: do pedido de correção à suspensão de recursos, da ocultação de uma ficha ao encerramento de uma conta. Não divulgamos acusações como se fossem decisões e não mantemos listas públicas de "denunciados".
 
-**Recurso.** Toda decisão que afete sua ficha, conta ou publicações pode ser contestada pelo formulário de contato, em texto livre. Dizemos o motivo da decisão e reanalisamos com atenção ao que você trouxer de novo. Sempre que possível, a reanálise será feita por pessoa diferente da que decidiu. [Enquanto houver uma só pessoa na moderação, dizer isso claramente e prever consulta a outra pessoa de confiança.] Retiradas preventivas de fichas a pedido de quem as representa não dependem de recurso: são atendidas na hora.
+**Recurso.** Toda decisão que afete sua ficha, conta ou publicações pode ser contestada pelo formulário de contato, em texto livre. Dizemos o motivo da decisão e reanalisamos com atenção ao que você trouxer de novo. Sempre que possível, a reanálise será feita por pessoa diferente da que decidiu. Enquanto a moderação for feita por uma só pessoa, dizemos isso com clareza e, em caso de recurso, consultamos outra pessoa de confiança da Rede antes de decidir. Retiradas preventivas de fichas a pedido de quem as representa não dependem de recurso: são atendidas na hora.
 
 ## 9. Retirada e exclusão
 
@@ -96,17 +96,17 @@ Qualquer pessoa pode pedir a retirada de uma ficha pelo botão **"Retirar do map
 
 ## 10. Responsabilidade
 
-Na medida permitida pela lei, não nos responsabilizamos por perdas decorrentes do uso do serviço, de informações de fichas, de conexões ou de trocas entre participantes. Nada aqui limita direitos que a lei garante e não podem ser afastados. [Revisão jurídica, inclusive para consumidores e para a UE.]
+Na medida permitida pela lei, não nos responsabilizamos por perdas decorrentes do uso do serviço, de informações de fichas, de conexões ou de trocas entre participantes. Nada aqui limita direitos que a lei garante e não podem ser afastados.
 
 ## 11. Mudanças e lei aplicável
 
-Podemos mudar estes termos; as mudanças relevantes serão publicadas aqui, com data, e comunicadas a quem tem conta. [Foro e lei aplicável: a definir com revisão jurídica.]
+Podemos mudar estes termos; as mudanças relevantes serão publicadas aqui, com data, e comunicadas a quem tem conta. Estes termos seguem a lei brasileira, sem prejuízo dos direitos que a lei do seu país lhe garanta.
 
 ---
 
 # English
 
-> **DRAFT FOR LEGAL REVIEW. Do not publish as final.**
+> **Provisional version of 22 November 2026, under legal review.**
 
 ## 1. What this service is
 
@@ -118,7 +118,7 @@ The service is offered as it is, by a small group acting in good faith. We can m
 
 ## 2. Who may use it
 
-Anyone may browse and search without an account. Managing listings, connecting and posting offers and needs requires an account, via a magic link sent to your email. Accounts are for people aged 18 or over. [Confirm with legal review.] You are responsible for keeping your email secure.
+Anyone may browse and search without an account. Managing listings, connecting and posting offers and needs requires an account, via a magic link sent to your email. Accounts are for people aged 18 or over. You are responsible for keeping your email secure.
 
 ## 3. Licences: data and code
 
@@ -130,7 +130,7 @@ Anyone may browse and search without an account. Managing listings, connecting a
 
 Third-party content (for example, text from initiatives' own sites) keeps its authors' licences. Listing summaries are original to the Network in Portuguese; English versions are machine translations, unreviewed, and labelled as such.
 
-The data licence does not override the rights of people and initiatives: **a withdrawal also applies to those who reuse the database**. Anyone republishing Network data must respect applicable data protection law and the withdrawals communicated to them. [Wording to be reviewed with legal support.]
+The data licence does not override the rights of people and initiatives: **a withdrawal also applies to those who reuse the database**. Anyone republishing Network data must respect applicable data protection law and the withdrawals communicated to them.
 
 **Code: AGPL-3.0.** The site's code is free software under the GNU Affero General Public License 3.0 and lives in a public repository. If you modify it and offer the result as an online service, you must make the modified code available under the same licence. The repository never contains secrets or private data.
 
@@ -155,7 +155,7 @@ Rules:
 A managed initiative may ask another for contact.
 
 - The receiving initiative decides whether to accept. **Contact details are revealed to both sides only after acceptance.**
-- If the initiative asked for has no manager yet, the request is held until someone claims the listing. [Define for how long.]
+- If the initiative asked for has no manager yet, the request is held until someone claims the listing. It remains valid for up to 180 days.
 - There is a daily limit on requests, to prevent abuse. Do not use connections for spam, pushy sales, harassment or harvesting data about people.
 - Declining needs no explanation and carries no consequence.
 
@@ -164,7 +164,7 @@ A managed initiative may ask another for contact.
 Claimed initiatives may post offers and needs (tools, space, volunteering, knowledge, materials).
 
 - Each item has an expiry date and **lapses on its own**; renew it if still valid.
-- Describe only what you can genuinely offer or need. Do not post home addresses, third parties' personal data, or disguised requests for money for individual ends. [Confirm scope with coordination.]
+- Describe only what you can genuinely offer or need. Do not post home addresses, third parties' personal data, or disguised requests for money for individual ends.
 - Arrangements that result from offers are between the parties. We help people meet; we are not a party to, guarantor of, or intermediary in the exchange.
 
 ## 7. Conduct
@@ -182,13 +182,13 @@ Not allowed:
 
 ## 8. Reports, moderation and appeal
 
-**Who moderates.** At launch, moderation is done by Rafael Reinehr. Governance is still forming (see the About page); as circles form, moderation will be shared. [Review once a conduct circle exists.]
+**Who moderates.** At launch, moderation is done by Rafael Reinehr. Governance is still forming (see the About page); as circles form, moderation will be shared.
 
 **How to report.** Through the site's contact form. Reports are handled in a private channel.
 
 **What we do.** We assess immediate risk and, if needed, limit a listing's exposure while we look into it. We hear the parties without demanding direct confrontation. We record facts and the decision. Measures are proportionate: from a request for correction to suspending features, from hiding a listing to closing an account. We do not present accusations as decisions and keep no public lists of "reported" parties.
 
-**Appeal.** Any decision affecting your listing, account or posts can be contested through the contact form, in free text. We give the reason for the decision and re-examine it with attention to anything new you bring. Whenever possible, the re-examination will be done by someone other than the person who decided. [While moderation is one person, say so plainly and provide for consulting another trusted person.] Preventive withdrawals of listings requested by those who represent them need no appeal: they are honoured at once.
+**Appeal.** Any decision affecting your listing, account or posts can be contested through the contact form, in free text. We give the reason for the decision and re-examine it with attention to anything new you bring. Whenever possible, the re-examination will be done by someone other than the person who decided. While moderation is done by one person, we say so plainly and, on appeal, consult another trusted person in the Network before deciding. Preventive withdrawals of listings requested by those who represent them need no appeal: they are honoured at once.
 
 ## 9. Withdrawal and deletion
 
@@ -196,8 +196,8 @@ Anyone may request withdrawal of a listing with the **"Remove from the map"** bu
 
 ## 10. Liability
 
-To the extent permitted by law, we are not liable for losses arising from use of the service, listing information, connections or exchanges between participants. Nothing here limits rights that the law guarantees and that cannot be waived. [Legal review, including consumers and the EU.]
+To the extent permitted by law, we are not liable for losses arising from use of the service, listing information, connections or exchanges between participants. Nothing here limits rights that the law guarantees and that cannot be waived.
 
 ## 11. Changes and governing law
 
-We may change these terms; significant changes will be published here, dated, and communicated to account holders. [Venue and governing law: to be defined with legal review.]
+We may change these terms; significant changes will be published here, dated, and communicated to account holders. These terms follow Brazilian law, without prejudice to the rights your own country's law grants you.

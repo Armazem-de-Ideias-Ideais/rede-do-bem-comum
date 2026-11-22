@@ -37,7 +37,7 @@
       ['about', 'charter', 'why', 'attribution'].map(function (k) { return '<li><a href="' + RBC.href(k) + '">' + esc(t('nav.' + k)) + '</a></li>'; }).join('') + '</ul></nav>' +
       '<nav aria-label="' + esc(t('foot.care')) + '"><h2>' + esc(t('foot.care')) + '</h2><ul>' +
       [['contact', 'nav.contact'], ['suggest', 'suggest'], ['correct', 'act.correct'], ['withdraw', 'act.withdraw'], ['privacy', 'nav.privacy'], ['terms', 'nav.terms']].map(function (k) { return '<li><a href="' + RBC.href(k[0]) + '">' + esc(t(k[1])) + '</a></li>'; }).join('') + '</ul></nav>' +
-      '<div class="site-foot__note"><p>' + esc(t('foot.licence')) + '</p><p>' + esc(t('foot.controllers')) + '</p>' +
+      '<div class="site-foot__note"><p>' + esc(t('foot.licence')) + ' <a href="https://github.com/Armazem-de-Ideias-Ideais/rede-do-bem-comum" rel="noopener">' + esc(t('foot.source')) + '</a></p><p>' + esc(t('foot.controllers')) + '</p>' +
       (RBC.db.name === 'static' ? '<p class="muted">' + esc(t('foot.static')) + '</p>' : '') + '</div></div>';
     if (active) { var el = document.getElementById(active); if (el && el !== document.activeElement && /^(lang-|menubtn)/.test(active)) el.focus(); }
   }

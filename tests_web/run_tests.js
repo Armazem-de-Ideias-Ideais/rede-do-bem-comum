@@ -79,6 +79,9 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
   const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   async function ctxFor(lang, w, h) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, locale: lang === 'pt' ? 'pt-BR' : 'en-GB', reducedMotion: 'reduce' });
+    /* O config.js do repositório aponta para a produção; os testes nunca a tocam: modo static por padrão. */
+    await ctx.route(/\/config\.js$/, r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "window.RBC_CONFIG={MODE:'static',SUPABASE_URL:'',SUPABASE_ANON_KEY:'',SITE_URL:''};" }));
+    await ctx.route(/supabase\.co\//, r => r.abort());
     await routeFonts(ctx);
     await ctx.addInitScript(l => { try { localStorage.setItem('rbc.lang', JSON.stringify(l)); } catch (e) {} window.__csp = []; document.addEventListener('securitypolicyviolation', e => window.__csp.push(e.violatedDirective + ' ' + e.blockedURI)); }, lang);
     return ctx;
@@ -191,10 +194,10 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     const rows = await page.locator('#sources-auto tbody tr').count();
     check('Atribuição: lista de fontes gerada dos dados (' + sources + ' fontes)', rows === sources, rows);
     check('Atribuição: frase da Karte von Morgen presente', /Contém dados da Karte von Morgen \/ OpenFairDB, disponíveis sob ODbL/.test(await page.innerText('main')));
-    for (const [r, re] of [['privacidade', /MINUTA PARA REVISÃO JURÍDICA/], ['termos', /MINUTA PARA REVISÃO JURÍDICA/]]) { await page.goto(BASE + '#' + r); await ready(page); check('Marcação de MINUTA mantida em #' + r, re.test(await page.innerText('main'))); }
+    for (const [r, re] of [['privacidade', /Versão provisória de 22\/11\/2026, em revisão jurídica/], ['termos', /Versão provisória de 22\/11\/2026, em revisão jurídica/]]) { await page.goto(BASE + '#' + r); await ready(page); check('Aviso de versão provisória em #' + r, re.test(await page.innerText('main'))); }
     await ctx.close();
     const ctxE = await ctxFor('en', 1280, 800), pe = await ctxE.newPage(); watch(pe, 'en-data');
-    await pe.goto(BASE + '#privacy'); await ready(pe); check('DRAFT marker kept in #privacy (EN)', /DRAFT FOR LEGAL REVIEW/.test(await pe.innerText('main')));
+    await pe.goto(BASE + '#privacy'); await ready(pe); check('Provisional-version notice in #privacy (EN)', /Provisional version of 22 November 2026/.test(await pe.innerText('main')));
     await ctxE.close();
   }
 
