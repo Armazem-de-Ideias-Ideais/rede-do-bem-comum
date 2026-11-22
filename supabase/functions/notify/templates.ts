@@ -150,14 +150,14 @@ export function render(ctx: NotificationContext, site: string): RenderedEmail {
         : "Confirme a retirada de uma ficha da Rede do Bem Comum";
       const body = locale === "en"
         ? [`Someone (hopefully you) asked to withdraw the listing "${name}" from the Rede do Bem Comum map using this address.`,
-           "To withdraw it, open the link below. It works once and is valid for 24 hours. The listing leaves the map as soon as you confirm.",
+           "To withdraw it, open the link below and press \"Confirm the withdrawal\". The link works once and is valid for 24 hours. The listing leaves the map as soon as you confirm.",
            "If it was not you, ignore this message: nothing changes without the link."]
         : locale === "es"
         ? [`Alguien (esperamos que tú) pidió retirar la ficha "${name}" del mapa de la Rede do Bem Comum usando esta dirección.`,
-           "Para retirarla, abre el enlace de abajo. Funciona una sola vez y vale por 24 horas. La ficha sale del mapa en cuanto confirmes.",
+           "Para retirarla, abre el enlace de abajo y pulsa el botón \"Confirmar a retirada\" (la página está en portugués). El enlace funciona una sola vez y vale por 24 horas. La ficha sale del mapa en cuanto confirmes.",
            "Si no fuiste tú, ignora este mensaje: nada cambia sin el enlace."]
         : [`Alguém (esperamos que você) pediu para retirar a ficha "${name}" do mapa da Rede do Bem Comum usando este endereço.`,
-           "Para retirar, abra o link abaixo. Ele funciona uma vez só e vale por 24 horas. A ficha sai do mapa assim que você confirmar.",
+           "Para retirar, abra o link abaixo e toque em \"Confirmar a retirada\". O link funciona uma vez só e vale por 24 horas. A ficha sai do mapa assim que você confirmar.",
            "Se não foi você, ignore esta mensagem: nada muda sem o link."];
       return { subject, ...wrap(locale, body, confirm) };
     }
