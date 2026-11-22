@@ -1,5 +1,5 @@
 # Dados de trabalho e privados nunca entram no repositório
-data/
+/data/
 *PRIVADO*
 supabase/seed/out/
 supabase/tests/output/
