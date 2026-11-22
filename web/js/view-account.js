@@ -366,12 +366,108 @@
         box.innerHTML = '<div class="seg seg--wrap" role="group" aria-label="' + esc(t('mod.queues')) + '">' + QUEUES.map(function (q) {
           var n = counts && counts[q] != null ? counts[q] : (q === 'invitations' ? (counts && counts.invites_pending) : null);
           return '<button type="button" data-queue="' + q + '" aria-pressed="' + (mq.queue === q) + '"><span>' + esc(t('mod.q.' + q)) + (n != null ? ' (' + n + ')' : '') + '</span></button>';
-        }).join('') + '</div><div id="mqbox" aria-live="polite"></div>';
-        box.addEventListener('click', function (ev) { var b = ev.target.closest('[data-queue]'); if (!b) return; mq.queue = b.getAttribute('data-queue'); mq.offset = 0; RBC.qsa('[data-queue]', box).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); loadQueue(RBC.qs('#mqbox', box)); });
+        }).join('') + '</div><section id="mqauto" class="psec autohide" aria-labelledby="auto-h" hidden></section><div id="mqbox" aria-live="polite"></div>';
+        var autoBox = RBC.qs('#mqauto', box); mountAuto(autoBox); showAuto(autoBox);
+        box.addEventListener('click', function (ev) { var b = ev.target.closest('[data-queue]'); if (!b) return; mq.queue = b.getAttribute('data-queue'); mq.offset = 0; RBC.qsa('[data-queue]', box).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); showAuto(autoBox); loadQueue(RBC.qs('#mqbox', box)); });
         loadQueue(RBC.qs('#mqbox', box));
       });
     }).then(null, fail(box));
   };
+  /* ---------- Retiradas automáticas (fila "takedowns"): disjuntor, grupos por ip_hash/email_hash e desfazer em lote ---------- */
+  var auto = { hours: 48, view: null, ready: false };
+  function showAuto(sec) { if (!sec) return; sec.hidden = mq.queue !== 'takedowns'; if (!sec.hidden && !auto.ready) { auto.ready = true; loadAuto(sec); } }
+  function sh(h) { return String(h || '').slice(0, 8); }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function localInput(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+  function mountAuto(sec) {
+    auto.ready = false; auto.view = null;
+    var now = new Date(), ago = new Date(now.getTime() - 24 * 36e5);
+    sec.innerHTML = '<h2 class="h3" id="auto-h" tabindex="-1">' + esc(t('auto.title')) + '</h2><p class="hint">' + esc(t('auto.lead')) + '</p>' +
+      '<div id="auto-result" aria-live="polite"></div>' +
+      '<div class="seg seg--wrap" role="group" aria-label="' + esc(t('auto.window')) + '">' + [24, 48, 168].map(function (h) {
+        return '<button type="button" data-auto-hours="' + h + '" aria-pressed="' + (auto.hours === h) + '"><span>' + esc(t('auto.w' + h)) + '</span></button>';
+      }).join('') + '</div>' +
+      '<div id="auto-view" aria-live="polite">' + ui.loading(1) + '</div>' +
+      '<form id="auto-period" class="careform autohide__period" novalidate><h3>' + esc(t('auto.undo_period')) + '</h3><p class="hint">' + esc(t('auto.period_lead')) + '</p>' + ui.errsum() +
+      ui.input({ name: 'auto_since', type: 'datetime-local', label: t('auto.since'), required: true, value: localInput(ago) }) +
+      ui.input({ name: 'auto_until', type: 'datetime-local', label: t('auto.until'), required: true, value: localInput(now) }) +
+      ui.input({ name: 'auto_why', label: t('auto.rationale'), required: true, multiline: true, rows: 2, maxlength: 2000, hint: esc(t('auto.rationale_hint')) }) +
+      '<p class="actions">' + ui.btn(t('auto.undo_period'), { type: 'submit', small: true, kind: 'secondary', icon: 'refresh' }) + '</p><div class="formout autohide__confirm" aria-live="polite"></div></form>';
+    sec.addEventListener('click', function (ev) {
+      var w = ev.target.closest('[data-auto-hours]');
+      if (w) { auto.hours = +w.getAttribute('data-auto-hours'); RBC.qsa('[data-auto-hours]', sec).forEach(function (x) { x.setAttribute('aria-pressed', x === w ? 'true' : 'false'); }); loadAuto(sec); return; }
+      var g = ev.target.closest('[data-auto-undo]');
+      if (g) { openGroupConfirm(sec, g); return; }
+      var c = ev.target.closest('[data-auto-cancel]');
+      if (c) { var z = c.closest('.autohide__confirm'); var opener = z.getAttribute('data-opener'); z.innerHTML = ''; var o = opener && RBC.qs('[data-auto-undo="' + opener + '"]', sec); if (o) o.focus(); return; }
+      var y = ev.target.closest('[data-auto-yes]');
+      if (y) runRestore(sec, y);
+    });
+    RBC.qs('#auto-period', sec).addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var f = ev.target, v = ui.read(f), a = new Date(v.auto_since), b = new Date(v.auto_until), errs = [];
+      if (!v.auto_since || !v.auto_until || isNaN(a) || isNaN(b) || a >= b) errs.push(['auto_until', t('auto.err.window')]);
+      if (String(v.auto_why || '').trim().length < 10) errs.push(['auto_why', t('mod.err.rationale')]);
+      if (!ui.showErrors(f, errs)) return;
+      confirmPanel(RBC.qs('.autohide__confirm', f), t('auto.confirm_period', { since: RBC.fmtDateTime(a.toISOString()), until: RBC.fmtDateTime(b.toISOString()) }),
+        { since: a.toISOString(), until: b.toISOString(), ip: null, email: null, why: v.auto_why.trim() }, '', null);
+    });
+  }
+  function confirmPanel(zone, text, params, opener, whyField) {
+    zone.setAttribute('data-opener', opener);
+    zone._params = params; zone._why = whyField || null;
+    zone.innerHTML = '<div class="notice notice--care" role="group" aria-labelledby="auto-q-' + esc(opener || 'p') + '">' + icon('alert') + '<div><p id="auto-q-' + esc(opener || 'p') + '"><strong>' + esc(text) + '</strong></p><p class="actions">' +
+      ui.btn(t('auto.yes_restore'), { small: true, attrs: 'data-auto-yes', icon: 'check' }) + ui.btn(t('auto.cancel'), { small: true, kind: 'quiet', attrs: 'data-auto-cancel' }) + '</p></div></div>';
+    RBC.focusEl(RBC.qs('[data-auto-yes]', zone));
+  }
+  function openGroupConfirm(sec, btn) {
+    var key = btn.getAttribute('data-auto-undo'), kind = key.charAt(0), idx = +key.slice(1), g = auto.view && (kind === 'i' ? auto.view.by_ip : auto.view.by_email)[idx];
+    if (!g) return;
+    var li = btn.closest('li'), why = RBC.qs('textarea', li), zone = RBC.qs('.autohide__confirm', li);
+    var wrap = RBC.qs('.autohide__why', li); wrap.hidden = false;
+    if (why.value.trim().length < 10) { ui.showErrors(li, [[why.name, t('mod.err.rationale')]]); why.focus(); return; }
+    ui.clearErrors(li);
+    confirmPanel(zone, t('auto.confirm_group', { n: g.hidden || 0 }), { since: g.first_at, until: new Date().toISOString(), ip: kind === 'i' ? g.ip_hash : null, email: kind === 'e' ? g.email_hash : null, why: why.value.trim() }, key, why);
+  }
+  function runRestore(sec, yesBtn) {
+    var zone = yesBtn.closest('.autohide__confirm'), p = zone._params, out = RBC.qs('#auto-result', sec);
+    if (!p) return;
+    if (p.why.length < 10) return;
+    RBC.qsa('button', zone).forEach(function (b) { b.disabled = true; }); yesBtn.setAttribute('aria-busy', 'true');
+    RBC.db.call('mod_restore_auto_hidden', { p_since: p.since, p_until: p.until, p_ip_hash: p.ip, p_email_hash: p.email, p_rationale: p.why }).then(function (n) {
+      n = +n || 0; zone.innerHTML = '';
+      F.result(out, 'ok', n === 1 ? t('auto.restored_one') : t('auto.restored', { n: n }));
+      var pf = RBC.qs('#auto-period', sec); if (pf) { var ta = RBC.qs('textarea', pf); if (ta) ta.value = ''; }
+      RBC.reloadData();
+      loadAuto(sec, true);
+    }, function (err) { RBC.qsa('button', zone).forEach(function (b) { b.disabled = false; }); yesBtn.removeAttribute('aria-busy'); zone.innerHTML = ''; F.result(out, 'error', t('err.title'), '<p>' + esc(F.errMsg(err)) + '</p>'); });
+  }
+  function groupCard(g, kind, i) {
+    var key = (kind === 'i' ? 'i' : 'e') + i, id = 'auto-why-' + key;
+    var rows = [[t('auto.hash'), '<code>' + esc(sh(kind === 'i' ? g.ip_hash : g.email_hash)) + '</code>']];
+    if (kind === 'e') { rows.push([t('auto.domain'), g.email_domain ? esc(g.email_domain) : '—']); rows.push([t('auto.domain_match'), esc(t(g.domain_matches ? 'auto.yes' : 'auto.no'))]); }
+    rows.push([t('auto.requests'), esc(g.requests)], [t('auto.hidden'), esc(g.hidden)], [t('auto.contained'), esc(g.contained)], [t('auto.awaiting'), esc(g.awaiting)],
+      [t('auto.range'), esc(RBC.fmtDateTime(g.first_at)) + ' – ' + esc(RBC.fmtDateTime(g.last_at))]);
+    return '<li class="qitem autohide__group">' + ui.dl(rows) +
+      '<div class="autohide__why" hidden>' + ui.input({ name: id, label: t('auto.rationale'), required: true, multiline: true, rows: 2, maxlength: 2000, hint: esc(t('auto.rationale_hint')) }) + '</div>' +
+      '<p class="actions">' + ui.btn(t('auto.undo_group'), { small: true, kind: 'secondary', icon: 'refresh', attrs: 'data-auto-undo="' + key + '"' }) + '</p><div class="autohide__confirm" aria-live="polite"></div></li>';
+  }
+  function loadAuto(sec, keepResult) {
+    var box = RBC.qs('#auto-view', sec); box.innerHTML = ui.loading(1);
+    if (!keepResult) RBC.qs('#auto-result', sec).innerHTML = '';
+    RBC.db.call('mod_takedown_overview', { p_hours: auto.hours }).then(function (v) {
+      v = v || {}; auto.view = { breaker: v.breaker || {}, by_ip: v.by_ip || [], by_email: v.by_email || [] };
+      var b = auto.view.breaker;
+      var brk = '<h3>' + esc(t('auto.breaker')) + '</h3>' + ui.notice(b.tripped ? 'warn' : 'care', '<p><strong>' + esc(t(b.tripped ? 'auto.tripped' : 'auto.not_tripped')) + '</strong></p>') +
+        ui.dl([[t('auto.b.hour'), esc(t('auto.b.of', { n: b.hidden_last_hour || 0, limit: b.limit_per_hour || 0 }))], [t('auto.b.day'), esc(t('auto.b.of', { n: b.hidden_last_24h || 0, limit: b.limit_per_day || 0 }))],
+          [t('auto.b.contained'), esc(b.contained_last_24h || 0)], [t('auto.b.confirm'), esc(t('auto.b.of', { n: b.confirm_emails_last_24h || 0, limit: b.confirm_emails_limit_per_day || 0 }))],
+          [t('auto.b.alert'), b.last_containment_alert_at ? esc(RBC.fmtDateTime(b.last_containment_alert_at)) : '—']]);
+      function list(title, arr, kind) {
+        return '<h3>' + esc(title) + ' · ' + esc(t('mod.n', { n: arr.length })) + '</h3>' + (arr.length ? '<ul class="mlist">' + arr.map(function (g, i) { return groupCard(g, kind, i); }).join('') + '</ul>' + (arr.length >= 50 ? '<p class="hint">' + esc(t('auto.capped')) + '</p>' : '') : '<p class="muted">' + esc(t('auto.none')) + '</p>');
+      }
+      box.innerHTML = brk + list(t('auto.by_ip'), auto.view.by_ip, 'i') + list(t('auto.by_email'), auto.view.by_email, 'e');
+    }, function (err) { box.innerHTML = ui.state('error', { title: t('auto.loading_err'), text: F.errMsg(err), actions: ui.btn(t('state.retry'), { icon: 'refresh', attrs: 'data-auto-retry' }) }); var r = RBC.qs('[data-auto-retry]', box); if (r) r.addEventListener('click', function () { loadAuto(sec); }); });
+  }
   function loadQueue(qb) {
     qb.innerHTML = ui.loading(1);
     RBC.db.call('mod_list', { p_queue: mq.queue, p_status: null, p_limit: 50, p_offset: mq.offset }).then(function (items) {

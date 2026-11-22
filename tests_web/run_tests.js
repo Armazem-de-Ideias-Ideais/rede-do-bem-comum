@@ -87,8 +87,8 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     page.on('console', m => {
       const tx = m.text();
       if (/GL Driver Message/.test(tx)) { R.glNoise++; return; }
-      // respostas 404/429 do servidor simulado são deliberadas (link inválido, limite); o navegador as registra como erro de rede
-      if (/^supabase-mock/.test(tag) && /Failed to load resource: the server responded with a status of (404|429)/.test(tx)) { R.mockHttpErrors = (R.mockHttpErrors || 0) + 1; return; }
+      // respostas 400/404/429 do servidor simulado são deliberadas (link inválido, limite); o navegador as registra como erro de rede
+      if (/^supabase-mock/.test(tag) && /Failed to load resource: the server responded with a status of (400|404|429)/.test(tx)) { R.mockHttpErrors = (R.mockHttpErrors || 0) + 1; return; }
       if (m.type() === 'error' || (m.type() === 'warning' && /i18n|Content Security Policy/i.test(tx))) R.consoleErrors.push(tag + ': ' + m.type() + ': ' + tx);
       if (/Content Security Policy/i.test(tx)) R.cspViolations.push(tag + ': ' + tx);
     });
@@ -446,6 +446,151 @@ const EN_ROUTES = ['home', 'explore', 'i-' + pick.active.slug, 'take-part', 'abo
     await page.screenshot({ path: path.join(SHOTS, 'reivindicar_login_supabase_simulado.png') }); R.shots.push('reivindicar_login_supabase_simulado.png');
     R.supabaseMockCalls = calls.map(c => c.fn);
     await ctx.close();
+  }
+
+  /* ---------- 7b. painel de moderação: "Retiradas automáticas" (API simulada; contrato 1.2) ---------- */
+  {
+    const SB = 'https://mock.supabase.co', HX = c => c.repeat(64).slice(0, 64);
+    const IP1 = HX('a1b2c3d4'), IP2 = HX('0f0f1e1e'), EM1 = HX('deadbeef'), EM2 = HX('cafe1234');
+    const H = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PATCH,DELETE,OPTIONS', 'access-control-expose-headers': '*', 'content-type': 'application/json' };
+    const b64 = o => Buffer.from(JSON.stringify(o)).toString('base64url'), exp = Math.floor(Date.now() / 1000) + 86400 * 30;
+    const jwt = b64({ alg: 'HS256', typ: 'JWT' }) + '.' + b64({ sub: '00000000-0000-4000-8000-0000000000aa', aud: 'authenticated', role: 'authenticated', exp }) + '.sig';
+    const SESSION = { access_token: jwt, refresh_token: 'r-test', token_type: 'bearer', expires_in: 86400 * 30, expires_at: exp, user: { id: '00000000-0000-4000-8000-0000000000aa', aud: 'authenticated', role: 'authenticated', email: 'mod@example.org', app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' } };
+    const overview = (h, restored) => ({ window_hours: h,
+      breaker: { hidden_last_hour: restored ? 0 : 12, limit_per_hour: 15, hidden_last_24h: restored ? 0 : 31, limit_per_day: 50, limit_per_email_day: 3, tripped: false, contained_last_24h: 4, last_containment_alert_at: '2026-11-21T22:10:00Z', confirm_emails_last_24h: 9, confirm_emails_limit_per_day: 40 },
+      by_ip: restored ? [] : [{ ip_hash: IP1, requests: 7, hidden: 3, contained: 2, awaiting: 1, first_at: '2026-11-21T20:00:00Z', last_at: '2026-11-21T20:40:00Z' }, { ip_hash: IP2, requests: 2, hidden: 1, contained: 0, awaiting: 0, first_at: '2026-11-21T09:00:00Z', last_at: '2026-11-21T09:05:00Z' }],
+      by_email: restored ? [] : [{ email_hash: EM1, email_domain: 'example.org', requests: 4, hidden: 2, contained: 1, awaiting: 0, domain_matches: false, first_at: '2026-11-21T20:00:00Z', last_at: '2026-11-21T20:30:00Z' }, { email_hash: EM2, email_domain: null, requests: 1, hidden: 1, contained: 0, awaiting: 0, domain_matches: true, first_at: '2026-11-21T10:00:00Z', last_at: '2026-11-21T10:00:00Z' }] });
+    async function modCtx(roles, w, lang) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, locale: lang === 'en' ? 'en-GB' : 'pt-BR', timezoneId: 'America/Sao_Paulo', reducedMotion: 'reduce' });
+      await routeFonts(ctx);
+      await ctx.addInitScript(a => { try { localStorage.setItem('rbc.lang', JSON.stringify(a.l)); localStorage.setItem('sb-mock-auth-token', JSON.stringify(a.s)); } catch (e) {} }, { l: lang || 'pt', s: SESSION });
+      await ctx.route(/\/config\.js$/, r => r.fulfill({ status: 200, contentType: 'text/javascript', body: "window.RBC_CONFIG={MODE:'supabase',SUPABASE_URL:'" + SB + "',SUPABASE_ANON_KEY:'anon-test-key',SITE_URL:''};" }));
+      const st = { calls: [], restored: false, entityLists: 0 };
+      await ctx.route(SB + '/**', async r => {
+        const rq = r.request(), u = new URL(rq.url());
+        if (rq.method() === 'OPTIONS') return r.fulfill({ status: 204, headers: H });
+        const json = (b, code) => r.fulfill({ status: code || 200, headers: H, body: JSON.stringify(b) });
+        if (u.pathname === '/rest/v1/entity_list') { st.entityLists++; return json([]); }
+        if (u.pathname.indexOf('/rest/v1/rpc/') !== 0) return json([]);
+        const fn = u.pathname.replace('/rest/v1/rpc/', ''), body = rq.postDataJSON() || {};
+        st.calls.push({ fn, body });
+        if (fn === 'my_account') return json({ roles, managed: [], claims: [], connections: {} });
+        if (fn === 'mod_queue_counts') return json({ takedowns: 3, claims: 0, reports: 0, suggestions: 0, contact: 0, edits: 0, invite_candidates: 0, invites_pending: 0 });
+        if (fn === 'mod_list') return json([]);
+        if (fn === 'mod_takedown_overview') return json(overview(body.p_hours, st.restored));
+        if (fn === 'mod_restore_auto_hidden') {
+          if (String(body.p_rationale || '').trim().length < 10) return json({ code: '22023', message: 'justificativa obrigatória' }, 400);
+          if (/FALHA/.test(body.p_rationale)) return json({ code: '22023', message: 'janela inválida' }, 400);
+          st.restored = true; return json(body.p_ip_hash ? 3 : body.p_email_hash ? 1 : 5);
+        }
+        return json({ code: 'PGRST202', message: 'mock: função não simulada ' + fn }, 404);
+      });
+      return { ctx, st };
+    }
+    const lastCall = (st, fn) => st.calls.filter(c => c.fn === fn).pop();
+    const nCalls = (st, fn) => st.calls.filter(c => c.fn === fn).length;
+    const waitAuto = async page => { await page.waitForSelector('#mqauto:not([hidden]) .autohide__group', { timeout: 10000 }).catch(() => {}); await page.waitForTimeout(200); };
+
+    /* conta comum: a seção não existe */
+    { const { ctx, st } = await modCtx([], 1280, 'pt'); const page = await ctx.newPage(); watch(page, 'supabase-mock');
+      await page.goto(BASE + '#painel-editorial'); await ready(page); await page.waitForTimeout(800);
+      check('Painel (simulado): conta comum não vê "Retiradas automáticas" e não chama as funções de moderador', (await page.locator('#mqauto').count()) === 0 && !/Retiradas automáticas/.test(await page.textContent('main')) && nCalls(st, 'mod_takedown_overview') === 0 && nCalls(st, 'mod_restore_auto_hidden') === 0);
+      await ctx.close(); }
+
+    /* moderador, 1280 px */
+    const { ctx, st } = await modCtx(['moderator'], 1280, 'pt'); const page = await ctx.newPage(); watch(page, 'supabase-mock');
+    await page.goto(BASE + '#painel-editorial'); await ready(page); await waitAuto(page);
+    const txt = await page.textContent('#mqauto');
+    check('Painel (simulado): moderador vê a seção "Retiradas automáticas" na fila Retiradas e a visão é pedida com p_hours = 48', (await page.locator('#mqauto:not([hidden]) #auto-h').count()) === 1 && /Retiradas automáticas/.test(txt) && lastCall(st, 'mod_takedown_overview').body.p_hours === 48, lastCall(st, 'mod_takedown_overview'));
+    check('Painel (simulado): disjuntor mostra 12 de 15 (hora) e 31 de 50 (24 h)', /12 de 15/.test(txt) && /31 de 50/.test(txt) && /Disjuntor normal/.test(txt), txt.slice(0, 400));
+    const ng = await page.evaluate(() => ({ g: document.querySelectorAll('.autohide__group').length, codes: [...document.querySelectorAll('.autohide__group code')].map(c => c.textContent) }));
+    check('Painel (simulado): 2 grupos por IP e 2 por e-mail, cada um com os 8 primeiros caracteres do hash', ng.g === 4 && ng.codes.join(',') === [IP1, IP2, EM1, EM2].map(h => h.slice(0, 8)).join(','), ng);
+    check('Painel (simulado): mostra o domínio, as contagens e o intervalo; nenhum e-mail em claro nem hash completo na tela', /example\.org/.test(txt) && /Aguardando confirmação/.test(txt) && !/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\./.test(txt) && ![IP1, IP2, EM1, EM2].some(h => txt.includes(h)) && !(await page.content()).includes(IP1.slice(0, 20) + IP1.slice(20, 30)));
+    const w0 = nCalls(st, 'mod_takedown_overview');
+    await page.click('[data-auto-hours="168"]'); await page.waitForTimeout(500); const h168 = lastCall(st, 'mod_takedown_overview').body.p_hours;
+    await page.click('[data-auto-hours="24"]'); await page.waitForTimeout(500); const h24 = lastCall(st, 'mod_takedown_overview').body.p_hours;
+    check('Painel (simulado): seletor de janela 24 h / 48 h / 7 dias chama a visão com 24, 48 e 168', h168 === 168 && h24 === 24 && nCalls(st, 'mod_takedown_overview') === w0 + 2 && (await page.getAttribute('[data-auto-hours="24"]', 'aria-pressed')) === 'true');
+    await page.click('[data-auto-hours="48"]'); await page.waitForTimeout(500); await waitAuto(page);
+    await page.screenshot({ path: path.join(SHOTS, 'retiradas_automaticas_1280.png') }); R.shots.push('retiradas_automaticas_1280.png');
+    await page.locator('#mqauto').screenshot({ path: path.join(SHOTS, 'retiradas_automaticas_1280_secao.png') }); R.shots.push('retiradas_automaticas_1280_secao.png');
+
+    /* desfazer grupo: sem justificativa → erro e nenhuma chamada */
+    const li0 = page.locator('.autohide__group').nth(0);
+    await li0.locator('[data-auto-undo]').click(); await page.waitForTimeout(300);
+    const errNo = await li0.locator('.err:not([hidden])').count();
+    await li0.locator('textarea').fill('curta'); await li0.locator('[data-auto-undo]').click(); await page.waitForTimeout(300);
+    check('Painel (simulado): "Desfazer este grupo" exige justificativa de 10+ caracteres (sem texto e com texto curto: erro, nenhuma chamada, sem confirmação)', errNo === 1 && (await li0.locator('.err:not([hidden])').count()) === 1 && (await li0.locator('[data-auto-yes]').count()) === 0 && nCalls(st, 'mod_restore_auto_hidden') === 0);
+    await li0.locator('textarea').fill('Pedidos em massa do mesmo endereço.'); await li0.locator('[data-auto-undo]').click(); await page.waitForTimeout(300);
+    const conf = await li0.locator('.autohide__confirm').textContent();
+    check('Painel (simulado): com justificativa pede confirmação explícita "Restaurar 3 fichas?" e ainda não chama a função', /Restaurar 3 fichas\?/.test(conf) && (await li0.locator('[data-auto-yes]').count()) === 1 && nCalls(st, 'mod_restore_auto_hidden') === 0, conf);
+    await li0.locator('[data-auto-cancel]').click(); await page.waitForTimeout(200);
+    check('Painel (simulado): "Cancelar" fecha a confirmação sem chamar a função', (await li0.locator('[data-auto-yes]').count()) === 0 && nCalls(st, 'mod_restore_auto_hidden') === 0);
+    await li0.locator('[data-auto-undo]').click(); await page.waitForTimeout(200);
+    await page.screenshot({ path: path.join(SHOTS, 'retiradas_automaticas_confirmar_1280.png') }); R.shots.push('retiradas_automaticas_confirmar_1280.png');
+    const ov0 = nCalls(st, 'mod_takedown_overview'), el0 = st.entityLists;
+    const before = Date.now(); await li0.locator('[data-auto-yes]').click(); await page.waitForSelector('#auto-result .result', { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(700);
+    const rc = lastCall(st, 'mod_restore_auto_hidden'), resTxt = await page.textContent('#auto-result').catch(() => '');
+    check('Painel (simulado): confirmar chama mod_restore_auto_hidden com p_ip_hash completo, p_email_hash nulo, janela do grupo (início = first_at) e a justificativa',
+      rc && rc.body.p_ip_hash === IP1 && rc.body.p_email_hash === null && rc.body.p_since === '2026-11-21T20:00:00Z' && new Date(rc.body.p_until).getTime() >= new Date('2026-11-21T20:40:00Z').getTime() && Math.abs(new Date(rc.body.p_until).getTime() - before) < 60000 && rc.body.p_rationale === 'Pedidos em massa do mesmo endereço.' && nCalls(st, 'mod_restore_auto_hidden') === 1, rc);
+    check('Painel (simulado): mostra "3 fichas restauradas", recarrega a visão (nova chamada) e os dados (entity_list de novo) e a mensagem permanece', /3 fichas restauradas/.test(resTxt) && nCalls(st, 'mod_takedown_overview') === ov0 + 1 && st.entityLists > el0 && (await page.locator('.autohide__group').count()) === 0 && /Nenhum pedido/.test(await page.textContent('#auto-view')), { resTxt, ov: nCalls(st, 'mod_takedown_overview') - ov0, el: st.entityLists - el0 });
+
+    /* desfazer grupo de e-mail e por período (visão volta com grupos) */
+    st.restored = false; await page.click('[data-auto-hours="24"]'); await page.waitForTimeout(400); await page.click('[data-auto-hours="48"]'); await waitAuto(page);
+    const liE = page.locator('.autohide__group').nth(2);
+    await liE.locator('[data-auto-undo]').click(); await page.waitForTimeout(200);
+    await liE.locator('textarea').fill('Mesmo e-mail pedindo várias retiradas.'); await liE.locator('[data-auto-undo]').click(); await page.waitForTimeout(200); const confE = await liE.locator('.autohide__confirm').textContent();
+    await liE.locator('[data-auto-yes]').click(); await page.waitForSelector('#auto-result .result', { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(500);
+    const rcE = lastCall(st, 'mod_restore_auto_hidden');
+    check('Painel (simulado): grupo de e-mail chama com p_email_hash (e p_ip_hash nulo); confirmação "Restaurar 2 fichas?" e resultado "1 ficha restaurada"', /Restaurar 2 fichas\?/.test(confE) && rcE.body.p_email_hash === EM1 && rcE.body.p_ip_hash === null && /1 ficha restaurada/.test(await page.textContent('#auto-result')), rcE);
+    st.restored = false; await page.click('[data-auto-hours="24"]'); await page.waitForTimeout(400); await page.click('[data-auto-hours="48"]'); await waitAuto(page);
+    const pf = page.locator('#auto-period');
+    await pf.locator('#f-auto_since').fill('2026-11-21T10:00'); await pf.locator('#f-auto_until').fill('2026-11-21T09:00'); await pf.locator('#f-auto_why').fill('Justificativa suficiente.'); await pf.locator('[type=submit]').click(); await page.waitForTimeout(300);
+    const badWin = await pf.locator('#f-auto_until-err:not([hidden])').count() + await pf.locator('.errsum:not([hidden])').count();
+    await pf.locator('#f-auto_until').fill('2026-11-21T18:00'); await pf.locator('#f-auto_why').fill('curta'); await pf.locator('[type=submit]').click(); await page.waitForTimeout(300);
+    const shortWhy = await pf.locator('#f-auto_why-err:not([hidden])').count();
+    check('Painel (simulado): "Desfazer por período" barra janela invertida e justificativa curta, sem chamar a função', badWin > 0 && shortWhy === 1 && nCalls(st, 'mod_restore_auto_hidden') === 2 && (await pf.locator('[data-auto-yes]').count()) === 0, { badWin, shortWhy });
+    await pf.locator('#f-auto_why').fill('Ataque em massa de 21/11, conferido nos registros.'); await pf.locator('[type=submit]').click(); await page.waitForTimeout(300);
+    const confP = await pf.locator('.autohide__confirm').textContent(), nBeforeP = nCalls(st, 'mod_restore_auto_hidden');
+    await pf.locator('[data-auto-yes]').click(); await page.waitForSelector('#auto-result .result', { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(500);
+    const rcP = lastCall(st, 'mod_restore_auto_hidden');
+    check('Painel (simulado): por período pede confirmação e chama com início/fim em ISO (fuso de São Paulo) e hashes nulos; resultado "5 fichas restauradas"',
+      /^Restaurar as fichas ocultadas automaticamente entre/.test(confP.trim()) && nBeforeP === 2 && rcP.body.p_since === '2026-11-21T13:00:00.000Z' && rcP.body.p_until === '2026-11-21T21:00:00.000Z' && rcP.body.p_ip_hash === null && rcP.body.p_email_hash === null && rcP.body.p_rationale === 'Ataque em massa de 21/11, conferido nos registros.' && /5 fichas restauradas/.test(await page.textContent('#auto-result')), { confP, rcP });
+    await pf.locator('#f-auto_why').fill('FALHA simulada pelo servidor.'); await pf.locator('[type=submit]').click(); await page.waitForTimeout(300); await pf.locator('[data-auto-yes]').click(); await page.waitForSelector('#auto-result .result--error', { timeout: 8000 }).catch(() => {});
+    check('Painel (simulado): erro do servidor (22023) aparece como mensagem de erro, sem derrubar a seção', (await page.locator('#auto-result .result--error').count()) === 1 && (await page.locator('#auto-h').count()) === 1);
+    /* outras filas escondem a seção */
+    await page.click('[data-queue="claims"]'); await page.waitForTimeout(300);
+    const hiddenOther = await page.locator('#mqauto').isHidden(); await page.click('[data-queue="takedowns"]'); await page.waitForTimeout(300);
+    check('Painel (simulado): a seção só aparece na fila Retiradas', hiddenOther && !(await page.locator('#mqauto').isHidden()));
+    await ctx.close();
+
+    /* 360 px: sem rolagem horizontal, teclado e captura */
+    { const { ctx, st } = await modCtx(['moderator'], 360, 'pt'); const pg = await ctx.newPage(); watch(pg, 'supabase-mock');
+      await pg.goto(BASE + '#painel-editorial'); await ready(pg); await waitAuto(pg);
+      const ov = await pg.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth, wide: [...document.querySelectorAll('#mqauto *')].filter(e => e.getBoundingClientRect().right > document.documentElement.clientWidth + 1).map(e => e.tagName + '.' + e.className).slice(0, 5) }));
+      check('Painel (360 px): sem rolagem horizontal na seção (documento e elementos dentro da largura)', ov.sw <= ov.cw && ov.wide.length === 0, ov);
+      await pg.locator('#mqauto').screenshot({ path: path.join(SHOTS, 'retiradas_automaticas_360.png') }); R.shots.push('retiradas_automaticas_360.png');
+      await pg.locator('.autohide__group').nth(0).locator('[data-auto-undo]').click(); await pg.waitForTimeout(200);
+      await pg.locator('.autohide__group').nth(0).locator('textarea').fill('Pedidos em massa do mesmo endereço.'); await pg.locator('.autohide__group').nth(0).locator('[data-auto-undo]').click(); await pg.waitForTimeout(300);
+      await pg.locator('#mqauto').screenshot({ path: path.join(SHOTS, 'retiradas_automaticas_360_confirmar.png') }); R.shots.push('retiradas_automaticas_360_confirmar.png');
+      const ov2 = await pg.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
+      await pg.locator('[data-auto-cancel]').click();
+      await pg.focus('[data-auto-hours="24"]'); let reached = null;
+      for (let i = 0; i < 12 && !reached; i++) { await pg.keyboard.press('Tab'); reached = await pg.evaluate(() => { const a = document.activeElement; if (!a || !a.hasAttribute('data-auto-undo')) return null; const cs = getComputedStyle(a); return { outline: cs.outlineStyle, w: parseFloat(cs.outlineWidth) }; }); }
+      check('Painel (360 px): teclado chega ao botão "Desfazer este grupo" com foco visível; a confirmação também cabe na largura', reached && reached.outline !== 'none' && reached.w >= 2 && ov2, { reached, ov2 });
+      await ctx.close(); }
+
+    /* inglês */
+    { const { ctx } = await modCtx(['moderator'], 1280, 'en'); const pg = await ctx.newPage(); watch(pg, 'supabase-mock');
+      await pg.goto(BASE + '#editorial-panel'); await ready(pg); await waitAuto(pg);
+      const e = await pg.textContent('#mqauto');
+      check('Painel (simulado): inglês — "Automatic withdrawals", "Undo this group", "Undo by period" e disjuntor "12 of 15"', /Automatic withdrawals/.test(e) && /Undo this group/.test(e) && /Undo by period/.test(e) && /12 of 15/.test(e), e.slice(0, 200));
+      await ctx.close(); }
+
+    /* modo static: a seção não aparece */
+    { const ctx = await ctxFor('pt', 1280, 800), pg = await ctx.newPage(); watch(pg, 'static-painel');
+      await pg.goto(BASE + '#painel-editorial'); await ready(pg); await pg.waitForTimeout(500);
+      check('Modo static: o painel editorial não mostra "Retiradas automáticas" (tela "em breve")', (await pg.locator('#mqauto').count()) === 0 && !/Retiradas automáticas/.test(await pg.textContent('main')));
+      await ctx.close(); }
   }
 
   /* ---------- 6. console, CSP e rede ---------- */
